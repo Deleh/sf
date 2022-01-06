@@ -1,0 +1,36 @@
+* sf
+
+  /script framework/
+
+* Example
+
+#+begin_src bash
+  sfname="calc"
+  sfdesc="A simple calculator which can add and subtract."
+
+  sfargs=("A;First number")
+  sfargs+=("B;Second number")
+  sfargs+=("substract;s;Substract B from A")
+  sfargs+=("multiply;m;MULTIPLICATOR;1;Multiply the result with MULTIPLICATOR")
+
+  sfexamples=("calc 3 5;Prints the result of 3 + 5")
+  sfexamples=("calc -s 2 1;Prints the result of 2 - 1")
+  sfexamples=("calc -m 3 -s 2 1;Prints the result of (2 - 1) * 3")
+
+  sfextrausage="No copyright at all"
+
+  source sf
+
+  res=0
+  if [ "$substract" == true ]; then
+      res=`expr $A - $B`
+  else
+      res=`expr $A + $B`
+  fi
+
+  if [ "$multiply" -ge 1 ]; then
+      res=`expr $res \* $multiply`
+  fi
+
+  echo "The result is $sftbf$res$sftrst"
+#+end_src

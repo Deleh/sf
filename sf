@@ -1,0 +1,209 @@
+#!/usr/bin/env bash
+
+# Text formatting variables
+sftrst=`echo -e "\e[0m"`
+sftbf=`echo -e "\e[1m"`
+sftdim=`echo -e "\e[2m"`
+sftul=`echo -e "\e[4m"`
+sftblink=`echo -e "\e[5m"`
+sftinv=`echo -e "\e[7m"`
+sfthidden=`echo -e "\e[8m"`
+
+sftblack=`echo -e "\e[30m"`
+sftred=`echo -e "\e[31m"`
+sftgreen=`echo -e "\e[32m"`
+sftyellow=`echo -e "\e[33m"`
+sftblue=`echo -e "\e[34m"`
+sftmagenta=`echo -e "\e[35m"`
+sftcyan=`echo -e "\e[36m"`
+sftwhite=`echo -e "\e[97m"`
+
+# Set script name if not set
+if [ -z $sfname ]; then
+    sfname=$(basename "$0")
+fi
+
+# Internal error function
+function _sferr {
+    echo -e "${sftbf}${sftred}SF PARSE ERROR${sftrst} $1"
+    exit 1
+}
+
+# Public output functions
+function sferr {
+    echo -e "${sftbf}${sftred}ERROR${sftrst} $1"
+    if [ -z "$1" ]; then
+        exit 1
+    fi
+}
+
+function sfwarn {
+    echo -e "${sftbf}${sftyellow}WARNING${sftrst} $1"
+}
+
+# Declare variables for parsing
+OLDIFS=$IFS
+IFS=";"
+_sfphead=""
+_sfpdesc=""
+_sfodesc=""
+_sfexamples=""
+_sfpargs=()
+declare -A _sfflags
+declare -A _sfargs
+
+# Parse sf arguments
+for a in "${sfargs[@]}"; do
+
+    # Get amount of ;
+    subst=${a//";"}
+    count="$(((${#a} - ${#subst})))"
+
+    if [ $count -eq 1 ]; then
+
+        # Read positional argument declaration
+        read -r -a _sfparsearr <<< "${a}"
+
+        # Add to positional argument arry
+        _sfpargs+=("${_sfparsearr[0]}")
+
+        # Set usage heager and description
+        _sfphead="$_sfphead ${_sfparsearr[0]}"
+        _sfpdesc="$_sfpdesc  ${_sfparsearr[0]};${_sfparsearr[1]}\n"
+    
+    # Flags
+    elif [ $count -eq 2 ]; then
+
+        # Read flag declaration
+        read -r -a _sfparsearr <<< "${a}"
+        
+        # Set mappings
+        _sfflags["-${_sfparsearr[1]}"]="${_sfparsearr[0]}"
+        _sfflags["--${_sfparsearr[0]}"]="${_sfparsearr[0]}"
+
+        # Set default value
+        declare ${_sfparsearr[0]}=false
+
+        # Set description
+        _sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]};${_sfparsearr[2]}\n"
+
+    # Arguments
+    elif [ $count -eq 4 ]; then
+
+        # Read argument declaration
+        read -r -a _sfparsearr <<< "${a}"
+        
+        # Set mappings
+        _sfargs["-${_sfparsearr[1]}"]="${_sfparsearr[0]}"
+        _sfargs["--${_sfparsearr[0]}"]="${_sfparsearr[0]}"
+        
+        # Set default value
+        declare ${_sfparsearr[0]}="${_sfparsearr[3]}"
+
+        # Set description
+        _sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]} ${_sfparsearr[2]};${_sfparsearr[4]} (default: ${_sfparsearr[3]})\n"
+
+    else
+        _sferr "Wrong argument declaration: $a"
+    fi
+done
+
+# Parse examples
+for e in "${sfexamples[@]}"; do
+
+    # Get amount of ;
+    subst=${e//";"}
+    count="$(((${#e} - ${#subst})))"
+
+    if [ $count -eq 1 ]; then
+
+        # Read example
+        read -r -a _sfparsearr <<< "${e}"
+        
+        _sfexamples="$_sfexamples ${_sfparsearr[0]};${_sfparsearr[1]}\n"
+    else
+        _sferr "Wrong example declaration: $e"
+    fi
+done
+
+IFS=$OLDIFS
+
+# Usage function
+function sfusage {
+    echo -n "Usage: $sfname"
+        if [ "$_sfodesc" != "" ]; then
+        echo -n " OPTIONS"
+    fi
+    echo -e "$_sfphead"
+    if [ ! -z ${sfdesc+x} ]; then
+        echo -e "\n$sfdesc"
+    fi
+    if [ "$_sfpdesc" != "" ]; then
+        echo -e "\nPOSITIONAL ARGUMENTS"
+        echo -e "$_sfpdesc" | column -c 80 -s ";" -t -W 2
+    fi
+    if [ "$_sfodesc" != "" ]; then
+        echo -e "\nOPTIONS"
+        echo -e "$_sfodesc" | column -c 80 -s ";" -t -W 2
+    fi
+    if [ "$_sfexamples" != "" ]; then
+        echo -e "\nEXAMPLES"
+        echo -e "$_sfexamples" | column -c 80 -s ";" -t -W 2
+    fi
+    if [ ! -z ${sfextrausage+x} ]; then
+        echo -e "\n$sfextrausage"
+    fi
+    exit 0
+}
+
+# Check for help flag
+for a in "$@"; do
+    # Check if help
+    if [ "$a" == "-h" ] || [ "$a" == "--help" ]; then
+        sfusage
+    fi
+done
+
+# Parse arguments
+while (( "$#" )); do
+    
+    # Check if flag
+    if [ ! -z ${_sfflags["$1"]} ]; then
+        declare ${_sfflags["$1"]}=true
+
+    # Check if argument
+    elif [ ! -z ${_sfargs["$1"]} ]; then
+        
+        # Check if argument has value
+        if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
+            declare ${_sfargs["$1"]}="$2"
+            shift
+        else
+            sferr "Argument for '$1' missing"
+        fi
+
+    # Handle positional arguments and wrong arguments/flags
+    else
+        # Check if arg starts with -
+        if [ "${1:0:1}" == "-" ]; then
+            sferr "Unsupported argument: $1"
+        else
+            # Set positional argument
+            if [ "${#_sfpargs[@]}" != 0 ]; then
+                declare ${_sfpargs[0]}="$1"
+                _sfpargs=("${_sfpargs[@]:1}")
+            else
+                sferr "Too many positional arguments"
+            fi
+        fi
+    fi
+    shift
+done
+
+# Check if positional arguments left
+if [ ${#_sfpargs[@]} != 0 ]; then
+    for p in "${_sfpargs[@]}"; do
+        sferr "Positional argument '$p' missing" 0
+    done
+    exit 1
+fi
