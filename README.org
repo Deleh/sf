@@ -17,7 +17,7 @@
   sfexamples=("calc -s 2 1;Prints the result of 2 - 1")
   sfexamples=("calc -m 3 -s 2 1;Prints the result of (2 - 1) * 3")
 
-  sfextrausage="No copyright at all"
+  sfextrausage="No copyright at all."
 
   source sf
 
@@ -32,5 +32,34 @@
       res=`expr $res \* $multiply`
   fi
 
-  echo "The result is $sftbf$res$sftrst"
+  echo "The result is $sftbf$res$sftrst."
 #+end_src
+
+Help output:
+
+#+begin_example
+  $ calc -h
+  Usage: calc OPTIONS A B
+
+  A simple calculator which can add and subtract.
+
+  POSITIONAL ARGUMENTS
+    A  First number
+    B  Second number
+
+  OPTIONS
+    -s, --substract               Substract B from A
+    -m, --multiply MULTIPLICATOR  Multiply the result with MULTIPLICATOR (default:
+                                   1)
+
+  EXAMPLES
+   calc -m 3 -s 2 1  Prints the result of (2 - 1) * 3
+
+  No copyright at all.
+#+end_example
+
+Script output:
+
+#+begin_example
+  The result is 8.
+#+end_example
