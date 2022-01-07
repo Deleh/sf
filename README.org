@@ -32,11 +32,11 @@
    This is the list of variables which can be set *before* including /sf/.
    Every variable is optional.
 
-   - =sfname= :: Name of the script in usage output (default: filename)
-   - =sfdesc= :: Description of the script
-   - =sfargs= :: Array for declaration of arguments, positional arguments and flags. Look below for more information
-   - =sfexamples= :: Array for declaration of examples for the usage output. Look below for more information
-   - =sfextra= :: Additional usage output
+   | =sfname=     | Name of the script in usage output (default: filename)                                              |
+   | =sfdesc=     | Description of the script                                                                           |
+   | =sfargs=     | Array for declaration of arguments, positional arguments and flags. Look below for more information |
+   | =sfexamples= | Array for declaration of examples for the usage output. Look below for more information             |
+   | =sfextra=    | Additional usage output                                                                             |
 
    A complete example which uses every variable can be found below.
 
@@ -46,9 +46,9 @@
     Every string defines an argument, a flag or an positional argument of the script.
     The type is defined by the amount of semicolons in the string.
 
-    - Positional argument :: =<name>;<description>=
-    - Flag :: =<name>;<shorthand>;<description>=
-    - Argument :: =<name>;<shorthand>;<value_name>;<default_value>;<description>=
+    | Positional argument | =<name>;<description>=                                          |
+    | Flag                | =<name>;<shorthand>;<description>=                              |
+    | Argument            | =<name>;<shorthand>;<value_name>;<default_value>;<description>= |
 
     The order of declaration defines the order in the usage output.
 
@@ -87,8 +87,8 @@
 
     /sf/ provides two output functions which can be used to throw warnings and errors.
 
-    - =sfwarn= :: Takes a string as input and prints a warning.
-    - =sferr= :: Takes a string as input, prints an error and exits with result code 1. If an additional argument is passed (doesn't matter what), it will just throw an error and doesn't exit.
+    | =sfwarn= | Takes a string as input and prints a warning                                                                                                                                   |
+    | =sferr=  | Takes a string as input, prints an error and exits with result code 1. If an additional argument is passed (doesn't matter what), it will just throw an error and doesn't exit |
 
 *** Text formatting variables
 
@@ -123,7 +123,6 @@
 
   #+begin_src sh
     # Set sf-variables
-
     sfname="calc"
     sfdesc="A simple calculator which can add and subtract."
 
