@@ -1,4 +1,4 @@
-* sf
+\* sf
 
   /script framework/
 
@@ -8,14 +8,14 @@
   sfname="calc"
   sfdesc="A simple calculator which can add and subtract."
 
-  sfargs=("A;First number")
+  sfargs+=("A;First number")
   sfargs+=("B;Second number")
   sfargs+=("substract;s;Substract B from A")
   sfargs+=("multiply;m;MULTIPLICATOR;1;Multiply the result with MULTIPLICATOR")
 
-  sfexamples=("calc 3 5;Prints the result of 3 + 5")
-  sfexamples=("calc -s 2 1;Prints the result of 2 - 1")
-  sfexamples=("calc -m 3 -s 2 1;Prints the result of (2 - 1) * 3")
+  sfexamples+=("calc 3 5;Prints the result of 3 + 5")
+  sfexamples+=("calc -s 2 1;Prints the result of 2 - 1")
+  sfexamples+=("calc -m 3 -s 2 1;Prints the result of (2 - 1) * 3")
 
   sfextrausage="No copyright at all."
 
@@ -38,7 +38,6 @@
 Help output:
 
 #+begin_example
-  $ calc -h
   Usage: calc OPTIONS A B
 
   A simple calculator which can add and subtract.
@@ -53,7 +52,9 @@ Help output:
                                    1)
 
   EXAMPLES
-   calc -m 3 -s 2 1  Prints the result of (2 - 1) * 3
+    calc 3 5          Prints the result of 3 + 5
+    calc -s 2 1       Prints the result of 2 - 1
+    calc -m 3 -s 2 1  Prints the result of (2 - 1) * 3
 
   No copyright at all.
 #+end_example
