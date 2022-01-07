@@ -32,7 +32,7 @@ function _sferr {
 # Public output functions
 function sferr {
     echo -e "${sftbf}${sftred}ERROR${sftrst} $1"
-    if [ -z "$1" ]; then
+    if [ -z "$2" ]; then
         exit 1
     fi
 }
@@ -120,7 +120,7 @@ for e in "${sfexamples[@]}"; do
         # Read example
         read -r -a _sfparsearr <<< "${e}"
         
-        _sfexamples="$_sfexamples ${_sfparsearr[0]};${_sfparsearr[1]}\n"
+        _sfexamples="$_sfexamples  ${_sfparsearr[0]};${_sfparsearr[1]}\n"
     else
         _sferr "Wrong example declaration: $e"
     fi
