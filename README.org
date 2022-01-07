@@ -15,7 +15,7 @@
 
   -----
 
-  Here is the oneliner which was created with [[https://github.com/precious/bash_minifier][this]] tool:
+  Here is the oneliner version of /sf/ which was created with [[https://github.com/precious/bash_minifier][this]] tool:
 
   #+begin_src sh
     # sf -- script framework (https://github.com/Deleh/sf)
@@ -155,7 +155,7 @@
     # ----------------
     # Actual script
     # ----------------
-    
+
     res=0
     if [ "$substract" == true ]; then
         res=`expr $A - $B`
