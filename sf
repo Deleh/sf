@@ -53,10 +53,10 @@ declare -A _sfargs
 for a in "${sfargs[@]}"; do
 
     # Get amount of ;
-    subst=${a//";"}
-    count="$(((${#a} - ${#subst})))"
+    _sfsubst=${a//";"}
+    _sfcount="$(((${#a} - ${#_sfsubst})))"
 
-    if [ $count -eq 1 ]; then
+    if [ $_sfcount -eq 1 ]; then
 
         # Read positional argument declaration
         read -r -a _sfparsearr <<< "${a}"
@@ -67,13 +67,13 @@ for a in "${sfargs[@]}"; do
         # Set usage header and description
         _sfphead="$_sfphead ${_sfparsearr[0]}"
         _sfpdesc="$_sfpdesc  ${_sfparsearr[0]};${_sfparsearr[1]}\n"
-    
+
     # Flags
-    elif [ $count -eq 2 ]; then
+    elif [ $_sfcount -eq 2 ]; then
 
         # Read flag declaration
         read -r -a _sfparsearr <<< "${a}"
-        
+
         # Set mappings
         _sfflags["-${_sfparsearr[1]}"]="${_sfparsearr[0]}"
         _sfflags["--${_sfparsearr[0]}"]="${_sfparsearr[0]}"
@@ -85,15 +85,15 @@ for a in "${sfargs[@]}"; do
         _sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]};${_sfparsearr[2]}\n"
 
     # Arguments
-    elif [ $count -eq 4 ]; then
+    elif [ $_sfcount -eq 4 ]; then
 
         # Read argument declaration
         read -r -a _sfparsearr <<< "${a}"
-        
+
         # Set mappings
         _sfargs["-${_sfparsearr[1]}"]="${_sfparsearr[0]}"
         _sfargs["--${_sfparsearr[0]}"]="${_sfparsearr[0]}"
-        
+
         # Set default value
         declare ${_sfparsearr[0]}="${_sfparsearr[3]}"
 
@@ -109,14 +109,14 @@ done
 for e in "${sfexamples[@]}"; do
 
     # Get amount of ;
-    subst=${e//";"}
-    count="$(((${#e} - ${#subst})))"
+    _sfsubst=${e//";"}
+    _sfcount="$(((${#e} - ${#_sfsubst})))"
 
-    if [ $count -eq 1 ]; then
+    if [ $_sfcount -eq 1 ]; then
 
         # Read example
         read -r -a _sfparsearr <<< "${e}"
-        
+
         _sfexamples="$_sfexamples  ${_sfparsearr[0]};${_sfparsearr[1]}\n"
     else
         _sferr "Wrong example declaration: $e"
@@ -167,14 +167,14 @@ done
 
 # Parse arguments
 while (( "$#" )); do
-    
+
     # Check if flag
     if [ ! -z ${_sfflags["$1"]} ]; then
         declare ${_sfflags["$1"]}=true
 
     # Check if argument
     elif [ ! -z ${_sfargs["$1"]} ]; then
-        
+
         # Check if argument has value
         if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
             declare ${_sfargs["$1"]}="$2"
