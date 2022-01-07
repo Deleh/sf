@@ -18,11 +18,6 @@ sftmagenta=`echo -e "\e[35m"`
 sftcyan=`echo -e "\e[36m"`
 sftwhite=`echo -e "\e[97m"`
 
-# Set script name if not set
-if [ -z $sfname ]; then
-    sfname=$(basename "$0")
-fi
-
 # Internal error function
 function _sferr {
     echo -e "${sftbf}${sftred}SF PARSE ERROR${sftrst} $1"
@@ -67,7 +62,7 @@ for a in "${sfargs[@]}"; do
         # Add to positional argument arry
         _sfpargs+=("${_sfparsearr[0]}")
 
-        # Set usage heager and description
+        # Set usage header and description
         _sfphead="$_sfphead ${_sfparsearr[0]}"
         _sfpdesc="$_sfpdesc  ${_sfparsearr[0]};${_sfparsearr[1]}\n"
     
@@ -130,8 +125,12 @@ IFS=$OLDIFS
 
 # Usage function
 function sfusage {
-    echo -n "Usage: $sfname"
-        if [ "$_sfodesc" != "" ]; then
+    if [ -z ${sfname+x} ]; then
+        sfname=$(basename "$0")
+    else
+        echo -n "Usage: $sfname"
+    fi
+    if [ "$_sfodesc" != "" ]; then
         echo -n " OPTIONS"
     fi
     echo -e "$_sfphead"
@@ -150,15 +149,15 @@ function sfusage {
         echo -e "\nEXAMPLES"
         echo -e "$_sfexamples" | column -c 80 -s ";" -t -W 2
     fi
-    if [ ! -z ${sfextrausage+x} ]; then
-        echo -e "\n$sfextrausage"
+    if [ ! -z ${sfextra+x} ]; then
+        echo -e "\n$sfextra"
     fi
     exit 0
 }
 
 # Check for help flag
 for a in "$@"; do
-    # Check if help
+    # Check if help flag ist set
     if [ "$a" == "-h" ] || [ "$a" == "--help" ]; then
         sfusage
     fi
