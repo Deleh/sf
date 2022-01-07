@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# sf -- script framework (https://github.com/Deleh/sf)
+
 # Text formatting variables
 sftrst=`echo -e "\e[0m"`
 sftbf=`echo -e "\e[1m"`
@@ -7,16 +9,16 @@ sftdim=`echo -e "\e[2m"`
 sftul=`echo -e "\e[4m"`
 sftblink=`echo -e "\e[5m"`
 sftinv=`echo -e "\e[7m"`
-sfthidden=`echo -e "\e[8m"`
+sfthide=`echo -e "\e[8m"`
 
-sftblack=`echo -e "\e[30m"`
-sftred=`echo -e "\e[31m"`
-sftgreen=`echo -e "\e[32m"`
-sftyellow=`echo -e "\e[33m"`
-sftblue=`echo -e "\e[34m"`
-sftmagenta=`echo -e "\e[35m"`
-sftcyan=`echo -e "\e[36m"`
-sftwhite=`echo -e "\e[97m"`
+sftk=`echo -e "\e[30m"`
+sftr=`echo -e "\e[31m"`
+sftg=`echo -e "\e[32m"`
+sfty=`echo -e "\e[33m"`
+sftb=`echo -e "\e[34m"`
+sftm=`echo -e "\e[35m"`
+sftc=`echo -e "\e[36m"`
+sftw=`echo -e "\e[97m"`
 
 # Internal error function
 function _sferr {
