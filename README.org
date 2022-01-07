@@ -170,7 +170,7 @@
     echo "The result is $sftbf$res$sftrst."
   #+end_src
 
-  The usage output of the above script:
+  The usage output of the above script is:
 
   #+begin_example
     Usage: calc OPTIONS A B
