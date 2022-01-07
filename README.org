@@ -8,7 +8,7 @@
   - Output functions
   - Text formatting variables
 
-  All just by sourcing a file or adding an oneliner.
+  All just by declaring some variables and sourcing a file or adding an oneliner.
 
   The usage is pretty self-explanatory once you have seen it.
   Head directly to the [[#example][example]] to see it in action.
