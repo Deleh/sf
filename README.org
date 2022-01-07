@@ -63,10 +63,10 @@
 ** 2. Including /sf/
 
    Grab the =sf= file from the repo and place it next to your script.
-   Then source the file with
+   Then source it with
 
    #+begin_src sh
-     source sh
+     source sf
    #+end_src
 
    *Or* just copy and paste the oneliner from above.
