@@ -1,4 +1,4 @@
-* sf
+* sf -- script framework
 
   /script framework/ can be used to simplify and beautify bash scripts.
   It provides:
@@ -14,7 +14,7 @@
 
   Here is the oneliner which was created with [[https://github.com/precious/bash_minifier][this]] tool:
 
-  #+begin_src bash
+  #+begin_src sh
     # sf -- script framework (https://github.com/Deleh/sf)
     sftrst=`echo -e "\e[0m"`;sftbf=`echo -e "\e[1m"`;sftdim=`echo -e "\e[2m"`;sftul=`echo -e "\e[4m"`;sftblink=`echo -e "\e[5m"`;sftinv=`echo -e "\e[7m"`;sfthidden=`echo -e "\e[8m"`;sftblack=`echo -e "\e[30m"`;sftred=`echo -e "\e[31m"`;sftgreen=`echo -e "\e[32m"`;sftyellow=`echo -e "\e[33m"`;sftblue=`echo -e "\e[34m"`;sftmagenta=`echo -e "\e[35m"`;sftcyan=`echo -e "\e[36m"`;sftwhite=`echo -e "\e[97m"`;function _sferr { echo -e "${sftbf}${sftred}SF PARSE ERROR${sftrst} $1";exit 1;};function sferr { echo -e "${sftbf}${sftred}ERROR${sftrst} $1";if [ -z "$2" ];then exit 1;fi;};function sfwarn { echo -e "${sftbf}${sftyellow}WARNING${sftrst} $1";};OLDIFS=$IFS;IFS=";";_sfphead="";_sfpdesc="";_sfodesc="";_sfexamples="";_sfpargs=();declare -A _sfflags;declare -A _sfargs;for a in "${sfargs[@]}";do subst=${a//";"};count="$(((${#a} - ${#subst})))";if [ $count -eq 1 ];then read -r -a _sfparsearr<<<"${a}";_sfpargs+=("${_sfparsearr[0]}");_sfphead="$_sfphead ${_sfparsearr[0]}";_sfpdesc="$_sfpdesc  ${_sfparsearr[0]};${_sfparsearr[1]}\n";elif [ $count -eq 2 ];then read -r -a _sfparsearr<<<"${a}";_sfflags["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfflags["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}=false;_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]};${_sfparsearr[2]}\n";elif [ $count -eq 4 ];then read -r -a _sfparsearr<<<"${a}";_sfargs["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfargs["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}="${_sfparsearr[3]}";_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]} ${_sfparsearr[2]};${_sfparsearr[4]} (default: ${_sfparsearr[3]})\n";else _sferr "Wrong argument declaration: $a";fi;done;for e in "${sfexamples[@]}";do subst=${e//";"};count="$(((${#e} - ${#subst})))";if [ $count -eq 1 ];then read -r -a _sfparsearr<<<"${e}";_sfexamples="$_sfexamples  ${_sfparsearr[0]};${_sfparsearr[1]}\n";else _sferr "Wrong example declaration: $e";fi;done;IFS=$OLDIFS;function sfusage { if [ -z ${sfname+x} ];then sfname=$(basename "$0");else echo -n "Usage: $sfname";fi;if [ "$_sfodesc" != "" ];then echo -n " OPTIONS";fi;echo -e "$_sfphead";if [ ! -z ${sfdesc+x} ];then echo -e "\n$sfdesc";fi;if [ "$_sfpdesc" != "" ];then echo -e "\nPOSITIONAL ARGUMENTS";echo -e "$_sfpdesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfodesc" != "" ];then echo -e "\nOPTIONS";echo -e "$_sfodesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfexamples" != "" ];then echo -e "\nEXAMPLES";echo -e "$_sfexamples"|column -c 80 -s ";" -t -W 2;fi;if [ ! -z ${sfextra+x} ];then echo -e "\n$sfextra";fi;exit 0;};for a in "$@";do if [ "$a" == "-h" ]||[ "$a" == "--help" ];then sfusage;fi;done;while(("$#"));do if [ ! -z ${_sfflags["$1"]} ];then declare ${_sfflags["$1"]}=true;elif [ ! -z ${_sfargs["$1"]} ];then if [ -n "$2" ]&&[ "${2:0:1}" != "-" ];then declare ${_sfargs["$1"]}="$2";shift;else sferr "Argument for '$1' missing";fi;else if [ "${1:0:1}" == "-" ];then sferr "Unsupported argument: $1";else if [ "${#_sfpargs[@]}" != 0 ];then declare ${_sfpargs[0]}="$1";_sfpargs=("${_sfpargs[@]:1}");else sferr "Too many positional arguments";fi;fi;fi;shift;done;if [ ${#_sfpargs[@]} != 0 ];then for p in "${_sfpargs[@]}";do sferr "Positional argument '$p' missing" 0;done;exit 1;fi
   #+end_src
@@ -24,19 +24,21 @@
   The general usage is:
 
   1. Declare /sf/-variables at the top of your script
-  2. Source /sf/ or add it as an oneliner
+  2. Include /sf/
   3. Write your script
 
-** /sf/-variables
+** 1. /sf/-variables
 
    This is the list of variables which can be set *before* including /sf/.
    Every variable is optional.
 
    - =sfname= :: Name of the script in usage output (default: filename)
-   - =sfdesc= :: Description of the script (default: null)
-   - =sfargs= :: Array for declaration of arguments, positional arguments and flags. Look below for more information (default: empty)
-   - =sfexamples= :: Array for declaration of examples for the usage output. Look below for more information (default: empty)
-   - =sfextra= :: Additional usage output (default: null)
+   - =sfdesc= :: Description of the script
+   - =sfargs= :: Array for declaration of arguments, positional arguments and flags. Look below for more information
+   - =sfexamples= :: Array for declaration of examples for the usage output. Look below for more information
+   - =sfextra= :: Additional usage output
+
+   A complete example which uses every variable can be found below.
 
 *** =sfargs=
 
@@ -50,9 +52,78 @@
 
     The order of declaration defines the order in the usage output.
 
+*** =sfexamples=
+
+    This is also an array of strings.
+    Examples can be declared like this: =<command>;<description>=
+
+** 2. Including /sf/
+
+   Grab the =sf= file from the repo and place it next to your script.
+   Then source the file with
+
+   #+begin_src sh
+     source sh
+   #+end_src
+
+   *Or* just copy and paste the oneliner from above.
+
+** 3. Write your script
+
+   /sf/ deals with missing inputs and handles the parsing of arguments.
+   This means that after /sf/ was included you can be sure that all variables have assigned values.
+   Flags are either =false= or =true=, arguments have the provided value or the default value and positional arguments have the provided value.
+   
+   The values are stored in variables with the name =$<name>=.
+   If you declared for example a flag like this:
+
+   #+begin_src sh
+     sfargs+=("verbose:v:Enable verbose output")
+   #+end_src
+
+   Then the variable =$verbose= exists with a value of either =false= or =true=.
+
+*** Output functions
+
+    /sf/ provides two output functions which can be used to throw warnings and errors.
+
+    - =sfwarn= :: Takes a string as input and prints a warning.
+    - =sferr= :: Takes a string as input, prints an error and exits with result code 1. If an additional argument is passed (doesn't matter what), it will just throw an error and doesn't exit.
+
+*** Text formatting variables
+
+    The following text formatting variables can be used to modify the output:
+
+    | =sftrst=   | Reset formatting             |
+    | =sftbf=    | Bold                         |
+    | =sftdim=   | Dim                          |
+    | =sftul=    | Underline                    |
+    | =sftblink= | Blinking                     |
+    | =sftinv=   | Invert foreground/background |
+    | =sfthide=  | Hidden                       |
+    | =sftk=     | Black                        |
+    | =sftr=     | Red                          |
+    | =sftg=     | Green                        |
+    | =sfty=     | Yellow                       |
+    | =sftb=     | Blue                         |
+    | =sftm=     | Magenta                      |
+    | =sftc=     | Cyan                         |
+    | =sftw=     | White                        |
+
+    The variables can be used directly in =echo=, no =-e= needed.
+    To echo the word "framework" bold and red use the variables for example like this:
+    
+    #+begin_src sh
+      echo "${sftbf}${sftr}framework${sftrst}"
+    #+end_src
+
 * Example
 
-  #+begin_src bash :tangle calc
+  Here is an example script which uses /sf/:
+
+  #+begin_src sh
+    # Set sf-variables
+
     sfname="calc"
     sfdesc="A simple calculator which can add and subtract."
 
@@ -67,8 +138,10 @@
 
     sfextra="No copyright at all."
 
+    # Source sf
     source sf
 
+    # Actual script
     res=0
     if [ "$substract" == true ]; then
         res=`expr $A - $B`
@@ -83,7 +156,7 @@
     echo "The result is $sftbf$res$sftrst."
   #+end_src
 
-  Help output:
+  The usage output of the above script:
 
   #+begin_example
     Usage: calc OPTIONS A B
@@ -105,10 +178,4 @@
       calc -m 3 -s 2 1  Prints the result of (2 - 1) * 3
 
     No copyright at all.
-  #+end_example
-
-  Script output:
-
-  #+begin_example
-    The result is 8.
   #+end_example
