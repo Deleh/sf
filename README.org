@@ -11,7 +11,7 @@
   All just by declaring some variables and sourcing a file or adding an oneliner.
 
   The usage is pretty self-explanatory once you have seen it.
-  Head directly to the [[#example][example]] to see it in action.
+  If you're curious and don't want to read through the documentation, head directly to the [[#example][example]].
 
   -----
 
@@ -24,48 +24,60 @@
 
 * Usage
 
-  The general usage is:
+  The general usage for writing a script with /sf/ is:
 
   1. Declare /sf/-variables at the top of your script
   2. Include /sf/
-  3. Write your script
+  3. Write your script with already parsed arguments and useful output functions/text formatting variables
 
 ** 1. /sf/-variables
 
    This is the list of variables which can be set *before* including /sf/.
    Every variable is optional.
 
-   | =sfname=     | Name of the script in usage output (default: filename)                                              |
-   | =sfdesc=     | Description of the script                                                                           |
-   | =sfargs=     | Array for declaration of arguments, positional arguments and flags. Look below for more information |
-   | =sfexamples= | Array for declaration of examples for the usage output. Look below for more information             |
-   | =sfextra=    | Additional usage output                                                                             |
+   | Name         | Description                                                                                         | Example                              |
+   |--------------+-----------------------------------------------------------------------------------------------------+--------------------------------------|
+   | =sfname=     | Name of the script in usage output (default: filename)                                              | ~sfname="calculator"~                |
+   | =sfdesc=     | Description of the script                                                                           | ~sfdesc="This script does nothing."~ |
+   | =sfargs=     | Array for declaration of arguments, positional arguments and flags. Look below for more information | See [[#sfargs][below]]                            |
+   | =sfexamples= | Array for declaration of examples for the usage output. Look below for more information             | See also [[#sfexamples][below]]                       |
+   | =sfextra=    | Additional usage output                                                                             | ~$sfextra="No copyright."~           |
 
-   A complete example which uses every variable can be found below.
+   A complete example which uses every variable can be found [[#example][below]].
 
 *** =sfargs=
+   :properties:
+   :custom_id: sfargs
+   :end:
 
     This is an array of strings.
     Every string defines an argument, a flag or an positional argument of the script.
     The type is defined by the amount of semicolons in the string.
 
-    | Positional argument | =<name>;<description>=                                          |
-    | Flag                | =<name>;<shorthand>;<description>=                              |
-    | Argument            | =<name>;<shorthand>;<value_name>;<default_value>;<description>= |
+    | Type                | Declaration order                                               | Example                                                 |
+    |---------------------+-----------------------------------------------------------------+---------------------------------------------------------|
+    | Positional argument | =<name>;<description>=                                          | ~sfargs+=("FILE;File to read")~                         |
+    | Flag                | =<name>;<shorthand>;<description>=                              | ~sfargs+=("verbose;v;Enable verbose output")~           |
+    | Argument            | =<name>;<shorthand>;<value_name>;<default_value>;<description>= | ~sfargs+=("text;t;TEXT;done;Print TEXT when finished")~ |
 
     The order of declaration defines the order in the usage output.
 
 *** =sfexamples=
+   :properties:
+   :custom_id: sfexamples
+   :end:
 
     This is also an array of strings.
-    Examples can be declared like this: =<command>;<description>=
+    Examples are of the form =<command>;<description>= and can be added to /sf/ like this:
+
+    : sfexamples+=("count 8;Count to eight")
 
 ** 2. Including /sf/
 
    Grab the =sf= file from the repo, place it next to your script and source it with
 
    #+begin_src sh
-     . sf
+     source sf
    #+end_src
 
    *Or* just copy and paste the oneliner from above.
@@ -73,8 +85,8 @@
 ** 3. Write your script
 
    /sf/ deals with missing inputs and handles the parsing of arguments.
-   This means that after /sf/ was included you can be sure that all variables have assigned values.
-   Flags are either =false= or =true=, arguments have the provided value or the default value and positional arguments have the provided value.
+   This means that after /sf/ was included *you can be sure that all variables have assigned values*.
+   Flags are either =false= or =true=, arguments have a provided value or the default value and positional arguments have a provided value.
 
    The values are stored in variables with the name =$<name>=.
    If you declared for example a flag like this:
@@ -92,7 +104,7 @@
     | =sfwarn= | Takes a string as input and prints a warning                                                                                                                                   |
     | =sferr=  | Takes a string as input, prints an error and exits with code 1. If an additional argument is passed (doesn't matter what), it will just throw an error and don't exit    |
 
-    Additionally the usage can be output with the following function:
+    Additionally the usage function is available:
 
     | =sfusage= | Output the usage of the script and exit with code 0 |
 
@@ -137,62 +149,62 @@
     # sf -- script framework
     # ----------------------
 
-    # Set sf-variables
-    sfname="calc"
-    sfdesc="A simple calculator which can add and subtract."
+    # Declare sf variables
+    sfname="count"
+    sfdesc="A simple counter."
 
-    sfargs+=("A;First number")
-    sfargs+=("B;Second number")
-    sfargs+=("substract;s;Substract B from A")
-    sfargs+=("multiply;m;MULTIPLICATOR;1;Multiply the result with MULTIPLICATOR")
+    sfargs+=("N;Number to count")
+    sfargs+=("reverse;r;Count reverse")
+    sfargs+=("text;t;TEXT;done;Print TEXT when finished counting")
 
-    sfexamples+=("calc 3 5;Prints the result of 3 + 5")
-    sfexamples+=("calc -s 2 1;Prints the result of 2 - 1")
-    sfexamples+=("calc -m 3 -s 2 1;Prints the result of (2 - 1) * 3")
+    sfexamples+=("count 8; Count to eight")
+    sfexamples+=("count -r -t go 3; Count reverse from 3 and print 'go'")
 
     sfextra="No copyright at all."
 
-    # Source sf
-    . sf
+    # Include sf, this could be replaced with a long oneliner
+    source sf
 
     # ----------------------
     # Actual script
     # ----------------------
 
-    res=0
-    if [ "$substract" == true ]; then
-        res=`expr $A - $B`
-    else
-        res=`expr $A + $B`
+    if [ "$N" -ge 11 ]; then                   # Use parsed argument
+        sferr "I can only count to/from 10"    # Throw an error and exit
     fi
 
-    if [ "$multiply" -ge 1 ]; then
-        res=`expr $res \* $multiply`
-    fi
-
-    echo "The result is $sftbf$res$sftrst."
+    counter="$N"                                # Use parsed argument
+    echo -n "$sftbf"                            # Print everyting from here bold
+    while [ "$counter" -ge 1 ]; do
+        if [ "$reverse" == true ]; then         # Use parsed argument
+            echo "  $counter"
+        else
+            echo "  $(expr $N - $counter + 1)"  # Use parsed argument
+        fi
+        counter=$(expr $counter - 1)
+        sleep 1
+    done
+    echo -n "$sftrst"                           # Reset text formatting
+    echo "$text"                                # Use parsed argument
   #+end_src
 
   The usage output of the above script is:
 
   #+begin_example
-    Usage: calc OPTIONS A B
+    Usage: count OPTIONS N
 
-    A simple calculator which can add and subtract.
+    A simple counter.
 
     POSITIONAL ARGUMENTS
-      A  First number
-      B  Second number
+      N  Number to count
 
     OPTIONS
-      -s, --substract               Substract B from A
-      -m, --multiply MULTIPLICATOR  Multiply the result with MULTIPLICATOR (default:
-                                     1)
+      -r, --reverse    Count reverse
+      -t, --text TEXT  Print TEXT when finished counting (default: done)
 
     EXAMPLES
-      calc 3 5          Prints the result of 3 + 5
-      calc -s 2 1       Prints the result of 2 - 1
-      calc -m 3 -s 2 1  Prints the result of (2 - 1) * 3
+      count 8            Count to eight
+      count -r -t go 3   Count reverse from 3 and print 'go'
 
     No copyright at all.
   #+end_example
