@@ -41,7 +41,7 @@
    | =sfdesc=     | Description of the script                                                                           | ~sfdesc="This script does nothing."~ |
    | =sfargs=     | Array for declaration of arguments, positional arguments and flags. Look below for more information | See [[#sfargs][below]]                            |
    | =sfexamples= | Array for declaration of examples for the usage output. Look below for more information             | See also [[#sfexamples][below]]                       |
-   | =sfextra=    | Additional usage output                                                                             | ~$sfextra="No copyright."~           |
+   | =sfextra=    | Additional usage output                                                                             | ~sfextra="No copyright."~            |
 
    A complete example which uses every variable can be found [[#example][below]].
 
