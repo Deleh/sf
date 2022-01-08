@@ -3,22 +3,22 @@
 # sf -- script framework (https://github.com/Deleh/sf)
 
 # Text formatting variables
-sftrst=`echo -e "\e[0m"`
-sftbf=`echo -e "\e[1m"`
-sftdim=`echo -e "\e[2m"`
-sftul=`echo -e "\e[4m"`
-sftblink=`echo -e "\e[5m"`
-sftinv=`echo -e "\e[7m"`
-sfthide=`echo -e "\e[8m"`
+sftrst=$'\e[0m'
+sftbf=$'\e[1m'
+sftdim=$'\e[2m'
+sftul=$'\e[4m'
+sftblink=$'\e[5m'
+sftinv=$'\e[7m'
+sfthide=$'\e[8m'
 
-sftk=`echo -e "\e[30m"`
-sftr=`echo -e "\e[31m"`
-sftg=`echo -e "\e[32m"`
-sfty=`echo -e "\e[33m"`
-sftb=`echo -e "\e[34m"`
-sftm=`echo -e "\e[35m"`
-sftc=`echo -e "\e[36m"`
-sftw=`echo -e "\e[97m"`
+sftk=$'\e[30m'
+sftr=$'\e[31m'
+sftg=$'\e[32m'
+sfty=$'\e[33m'
+sftb=$'\e[34m'
+sftm=$'\e[35m'
+sftc=$'\e[36m'
+sftw=$'\e[97m'
 
 # Internal error function
 function _sferr {
