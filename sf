@@ -20,12 +20,6 @@ sftm=$'\e[35m'
 sftc=$'\e[36m'
 sftw=$'\e[97m'
 
-# Internal error function
-function _sferr {
-    echo -e "${sftbf}${sftr}SF PARSE ERROR${sftrst} $1"
-    exit 1
-}
-
 # Public output functions
 function sferr {
     echo -e "${sftbf}${sftr}ERROR${sftrst} $1"
@@ -36,6 +30,12 @@ function sferr {
 
 function sfwarn {
     echo -e "${sftbf}${sfty}WARNING${sftrst} $1"
+}
+
+# Internal error function
+function _sferr {
+    echo -e "${sftbf}${sftr}SF PARSE ERROR${sftrst} $1"
+    exit 1
 }
 
 # Declare variables for parsing
@@ -126,7 +126,7 @@ done
 IFS=$OLDIFS
 
 # Usage function
-function sfusage {
+function _sfusage {
     echo -n "Usage: $(basename $0)"
     if [ "$_sfodesc" != "" ]; then
         echo -n " OPTIONS"
@@ -157,7 +157,7 @@ function sfusage {
 for a in "$@"; do
     # Check if help flag ist set
     if [ "$a" == "-h" ] || [ "$a" == "--help" ]; then
-        sfusage
+        _sfusage
     fi
 done
 
@@ -204,3 +204,6 @@ if [ ${#_sfpargs[@]} != 0 ]; then
     done
     exit 1
 fi
+
+# Unset all internal variables and functions
+unset a e _sfphead _sfpdesc _sfodesc _sfexamples _sfpargs _sfflags _sfargs _sferr _sfusage
