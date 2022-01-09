@@ -129,7 +129,7 @@ IFS=$OLDIFS
 function _sfusage {
     echo -n "Usage: $(basename $0)"
     if [ "$_sfodesc" != "" ]; then
-        echo -n " OPTIONS"
+        echo -n " [OPTIONS]"
     fi
     echo -e "$_sfphead"
     if [ ! -z ${sfdesc+x} ]; then
