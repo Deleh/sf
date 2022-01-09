@@ -35,16 +35,16 @@ function sfwarn {
 # Public input functions
 function sfask {
     if [ "$2" == "" ]; then
-        read -p "$1? [Y/n] " sfin
+        read -p "$1? [${sftbf}Y${sftrs}/${sftbf}n${sftrs}] " sfin
         [[ "$sfin" =~ y|Y|^$ ]] && sfin=true || sfin=false
     else
-        read -p "$1? [y/N] " sfin
+        read -p "$1? [${sftbf}y${sftrs}/${sftbf}N${sftrs}] " sfin
         [[ "$sfin" =~ n|N|^$ ]] && sfin=false || sfin=true
     fi
 }
 
 function sfget {
-    [ "$2" != "" ] && read -p "$1 [$2]: " sfin || read -p "$1: " sfin
+    [ "$2" != "" ] && read -p "$1 [${sftbf}$2${sftrs}]: " sfin || read -p "$1: " sfin
     [ "$sfin" == "" ] && [ "$2" != "" ] && sfin="$2"
 }
 
