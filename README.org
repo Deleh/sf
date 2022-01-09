@@ -35,7 +35,7 @@
 *** 1. /sf/-variables
 
     This is the list of variables which can be set *before* including /sf/.
-    Every variable is optional.
+    Everything is optional.
 
     | Name         | Description                                                                                         | Example                              |
     |--------------+-----------------------------------------------------------------------------------------------------+--------------------------------------|
@@ -93,7 +93,7 @@
     If you declared for example a flag like this:
 
     #+begin_src sh
-      sfargs+=("verbose:v:Enable verbose output")
+      sfargs+=("verbose;v;Enable verbose output")
     #+end_src
 
     Then the variable =$verbose= exists with a value of either =false= or =true=.
@@ -125,13 +125,13 @@
      #+begin_example
        Please enter your name [John]: Jane
        Hello Jane!
-       Do you want to proceed? [Y/n] 
+       Do you want to proceed? [Y/n]
        Are you sure? [y/N] y
        Please continue...
      #+end_example
 
-     *Note* the colon and the question marks are added by the functions.
-     
+     *Note* that the colon and question marks get added by the functions.
+
 **** Output functions
 
      Two output functions are provided which can be used to throw warnings and errors.
