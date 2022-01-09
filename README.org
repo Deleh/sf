@@ -5,6 +5,7 @@
 
   - Argument parsing
   - Usage output
+  - Input functions
   - Output functions
   - Text formatting variables
 
@@ -20,7 +21,7 @@
 
   #+begin_src sh
     # sf -- script framework (https://github.com/Deleh/sf)
-    sftrs=$'\e[0m';sftbf=$'\e[1m';sftdim=$'\e[2m';sftul=$'\e[4m';sftblink=$'\e[5m';sftinv=$'\e[7m';sfthide=$'\e[8m';sftclr=$'\e[1A\e[K';sftk=$'\e[30m';sftr=$'\e[31m';sftg=$'\e[32m';sfty=$'\e[33m';sftb=$'\e[34m';sftm=$'\e[35m';sftc=$'\e[36m';sftw=$'\e[97m';function sferr { echo -e "${sftbf}${sftr}ERROR${sftrs} $1";if [ -z "$2" ];then exit 1;fi;};function sfwarn { echo -e "${sftbf}${sfty}WARNING${sftrs} $1";};function _sferr { echo -e "${sftbf}${sftr}SF PARSE ERROR${sftrs} $1";exit 1;};OLDIFS=$IFS;IFS=";";_sfphead="";_sfpdesc="";_sfodesc="";_sfexamples="";_sfpargs=();declare -A _sfflags;declare -A _sfargs;for a in "${sfargs[@]}";do _sfsubst=${a//";"};_sfcount="$(((${#a} - ${#_sfsubst})))";if [ $_sfcount -eq 1 ];then read -r -a _sfparsearr<<<"${a}";_sfpargs+=("${_sfparsearr[0]}");_sfphead="$_sfphead ${_sfparsearr[0]}";_sfpdesc="$_sfpdesc  ${_sfparsearr[0]};${_sfparsearr[1]}\n";elif [ $_sfcount -eq 2 ];then read -r -a _sfparsearr<<<"${a}";_sfflags["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfflags["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}=false;_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]};${_sfparsearr[2]}\n";elif [ $_sfcount -eq 4 ];then read -r -a _sfparsearr<<<"${a}";_sfargs["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfargs["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}="${_sfparsearr[3]}";_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]} ${_sfparsearr[2]};${_sfparsearr[4]} (default: ${_sfparsearr[3]})\n";else _sferr "Wrong argument declaration: $a";fi;done;for e in "${sfexamples[@]}";do _sfsubst=${e//";"};_sfcount="$(((${#e} - ${#_sfsubst})))";if [ $_sfcount -eq 1 ];then read -r -a _sfparsearr<<<"${e}";_sfexamples="$_sfexamples  ${_sfparsearr[0]};${_sfparsearr[1]}\n";else _sferr "Wrong example declaration: $e";fi;done;IFS=$OLDIFS;function _sfusage { echo -n "Usage: $(basename $0)";if [ "$_sfodesc" != "" ];then echo -n " [OPTIONS]";fi;echo -e "$_sfphead";if [ ! -z ${sfdesc+x} ];then echo -e "\n$sfdesc";fi;if [ "$_sfpdesc" != "" ];then echo -e "\nPOSITIONAL ARGUMENTS";echo -e "$_sfpdesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfodesc" != "" ];then echo -e "\nOPTIONS";echo -e "$_sfodesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfexamples" != "" ];then echo -e "\nEXAMPLES";echo -e "$_sfexamples"|column -c 80 -s ";" -t -W 2;fi;if [ ! -z ${sfextra+x} ];then echo -e "\n$sfextra";fi;exit 0;};for a in "$@";do if [ "$a" == "-h" ]||[ "$a" == "--help" ];then _sfusage;fi;done;while(("$#"));do if [ ! -z ${_sfflags["$1"]} ];then declare ${_sfflags["$1"]}=true;elif [ ! -z ${_sfargs["$1"]} ];then if [ -n "$2" ]&&[ "${2:0:1}" != "-" ];then declare ${_sfargs["$1"]}="$2";shift;else sferr "Argument for '$1' missing";fi;else if [ "${1:0:1}" == "-" ];then sferr "Unsupported argument: $1";else if [ "${#_sfpargs[@]}" != 0 ];then declare ${_sfpargs[0]}="$1";_sfpargs=("${_sfpargs[@]:1}");else sferr "Too many positional arguments";fi;fi;fi;shift;done;if [ ${#_sfpargs[@]} != 0 ];then for p in "${_sfpargs[@]}";do sferr "Positional argument '$p' missing" 0;done;exit 1;fi;unset a e _sfphead _sfpdesc _sfodesc _sfexamples _sfpargs _sfflags _sfargs _sferr _sfusage
+    sftrs=$'\e[0m';sftbf=$'\e[1m';sftdim=$'\e[2m';sftul=$'\e[4m';sftblink=$'\e[5m';sftinv=$'\e[7m';sfthide=$'\e[8m';sftclr=$'\e[1A\e[K';sftk=$'\e[30m';sftr=$'\e[31m';sftg=$'\e[32m';sfty=$'\e[33m';sftb=$'\e[34m';sftm=$'\e[35m';sftc=$'\e[36m';sftw=$'\e[97m';function sferr { echo -e "${sftbf}${sftr}ERROR${sftrs} $1";if [ -z "$2" ];then exit 1;fi;};function sfwarn { echo -e "${sftbf}${sfty}WARNING${sftrs} $1";};function sfask { if [ "$2" == "" ];then read -p "$1? [Y/n] " sfin;[[ "$sfin" =~ y|Y|^$ ]]&&sfin=true||sfin=false;else read -p "$1? [y/N] " sfin;[[ "$sfin" =~ n|N|^$ ]]&&sfin=false||sfin=true;fi;};function sfget { [ "$2" != "" ]&&read -p "$1 [$2]: " sfin||read -p "$1: " sfin;[ "$sfin" == "" ]&&[ "$2" != "" ]&&sfin="$2";};function _sferr { echo -e "${sftbf}${sftr}SF PARSE ERROR${sftrs} $1";exit 1;};OLDIFS=$IFS;IFS=";";_sfphead="";_sfpdesc="";_sfodesc="";_sfexamples="";_sfpargs=();declare -A _sfflags;declare -A _sfargs;for a in "${sfargs[@]}";do _sfsubst=${a//";"};_sfcount="$(((${#a} - ${#_sfsubst})))";if [ $_sfcount -eq 1 ];then read -r -a _sfparsearr<<<"${a}";_sfpargs+=("${_sfparsearr[0]}");_sfphead="$_sfphead ${_sfparsearr[0]}";_sfpdesc="$_sfpdesc  ${_sfparsearr[0]};${_sfparsearr[1]}\n";elif [ $_sfcount -eq 2 ];then read -r -a _sfparsearr<<<"${a}";_sfflags["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfflags["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}=false;_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]};${_sfparsearr[2]}\n";elif [ $_sfcount -eq 4 ];then read -r -a _sfparsearr<<<"${a}";_sfargs["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfargs["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}="${_sfparsearr[3]}";_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]} ${_sfparsearr[2]};${_sfparsearr[4]} (default: ${_sfparsearr[3]})\n";else _sferr "Wrong argument declaration: $a";fi;done;for e in "${sfexamples[@]}";do _sfsubst=${e//";"};_sfcount="$(((${#e} - ${#_sfsubst})))";if [ $_sfcount -eq 1 ];then read -r -a _sfparsearr<<<"${e}";_sfexamples="$_sfexamples  ${_sfparsearr[0]};${_sfparsearr[1]}\n";else _sferr "Wrong example declaration: $e";fi;done;IFS=$OLDIFS;function _sfusage { echo -n "Usage: $(basename $0)";[ "$_sfodesc" != "" ]&&echo -n " [OPTIONS]";echo -e "$_sfphead";[ ! -z ${sfdesc+x} ]&&echo -e "\n$sfdesc";if [ "$_sfpdesc" != "" ];then echo -e "\nPOSITIONAL ARGUMENTS";echo -e "$_sfpdesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfodesc" != "" ];then echo -e "\nOPTIONS";echo -e "$_sfodesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfexamples" != "" ];then echo -e "\nEXAMPLES";echo -e "$_sfexamples"|column -c 80 -s ";" -t -W 2;fi;if [ ! -z ${sfextra+x} ];then echo -e "\n$sfextra";fi;exit 0;};for a in "$@";do [ "$a" == "-h" ]||[ "$a" == "--help" ]&&_sfusage;done;while(("$#"));do if [ ! -z ${_sfflags["$1"]} ];then declare ${_sfflags["$1"]}=true;elif [ ! -z ${_sfargs["$1"]} ];then if [ -n "$2" ]&&[ "${2:0:1}" != "-" ];then declare ${_sfargs["$1"]}="$2";shift;else sferr "Argument for '$1' missing";fi;else if [ "${1:0:1}" == "-" ];then sferr "Unsupported argument: $1";else if [ "${#_sfpargs[@]}" != 0 ];then declare ${_sfpargs[0]}="$1";_sfpargs=("${_sfpargs[@]:1}");else sferr "Too many positional arguments";fi;fi;fi;shift;done;if [ ${#_sfpargs[@]} != 0 ];then for p in "${_sfpargs[@]}";do sferr "Positional argument '$p' missing" 0;done;exit 1;fi;unset a e _sfphead _sfpdesc _sfodesc _sfexamples _sfpargs _sfflags _sfargs _sferr _sfusage
   #+end_src
 
 ** Usage
@@ -97,12 +98,46 @@
 
     Then the variable =$verbose= exists with a value of either =false= or =true=.
 
+**** Input functions
+
+     User input can be requested with two functions.
+     After calling a function, the user input is provided in the variable =$sfin=.
+
+     | =sfask= | Takes a string as input and asks for /yes/ or /no/. If an additional argument is provided (doesn't matter what), /no/ will be default. =$sfin= is either =true= or =false= |
+     | =sfget= | Takes a string as input and asks for user input. If a second argument is provided, this will be the default if no user input was entered                                   |
+
+     Here is a small snippet to show the usage:
+
+     #+begin_src bash
+       sfget "Please enter your name" "John"
+       echo "Hello $sfin"
+       sfask "Do you want to proceed"
+       if [ "$sfin" == true ]; then
+           sfask "Are you sure" "no"
+           [ "$sfin" == true ] && echo "Please continue..." || echo "Bye"
+       else
+           echo "Bye"
+       fi
+     #+end_src
+
+     And the execution:
+
+     #+begin_example
+       Please enter your name [John]: Jane
+       Hello Jane!
+       Do you want to proceed? [Y/n] 
+       Are you sure? [y/N] y
+       Please continue...
+     #+end_example
+
+     *Note* the colon and the question marks are added by the function
+     
 **** Output functions
 
-     /sf/ provides two output functions which can be used to throw warnings and errors.
+     Two output functions are provided which can be used to throw warnings and errors.
 
-     | =sfwarn= | Takes a string as input and prints a warning                                                                                                                                   |
-     | =sferr=  | Takes a string as input, prints an error and exits with code 1. If an additional argument is passed (doesn't matter what), it will just throw an error and don't exit    |
+     | =sfwarn= | Takes a string as input and prints a warning                                                                                                                          |
+     | =sferr=  | Takes a string as input, prints an error and exits with code 1. If an additional argument is passed (doesn't matter what), it will just throw an error and don't exit |
 
 **** Text formatting variables
 
