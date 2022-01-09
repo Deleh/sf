@@ -10,7 +10,7 @@ sftul=$'\e[4m'
 sftblink=$'\e[5m'
 sftinv=$'\e[7m'
 sfthide=$'\e[8m'
-
+sftclr=$'\e[1A\e[K'
 sftk=$'\e[30m'
 sftr=$'\e[31m'
 sftg=$'\e[32m'
