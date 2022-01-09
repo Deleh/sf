@@ -23,187 +23,187 @@
     sftrst=$'\e[0m';sftbf=$'\e[1m';sftdim=$'\e[2m';sftul=$'\e[4m';sftblink=$'\e[5m';sftinv=$'\e[7m';sfthide=$'\e[8m';sftk=$'\e[30m';sftr=$'\e[31m';sftg=$'\e[32m';sfty=$'\e[33m';sftb=$'\e[34m';sftm=$'\e[35m';sftc=$'\e[36m';sftw=$'\e[97m';function _sferr { echo -e "${sftbf}${sftr}SF PARSE ERROR${sftrst} $1";exit 1;};function sferr { echo -e "${sftbf}${sftr}ERROR${sftrst} $1";if [ -z "$2" ];then exit 1;fi;};function sfwarn { echo -e "${sftbf}${sfty}WARNING${sftrst} $1";};OLDIFS=$IFS;IFS=";";_sfphead="";_sfpdesc="";_sfodesc="";_sfexamples="";_sfpargs=();declare -A _sfflags;declare -A _sfargs;for a in "${sfargs[@]}";do _sfsubst=${a//";"};_sfcount="$(((${#a} - ${#_sfsubst})))";if [ $_sfcount -eq 1 ];then read -r -a _sfparsearr<<<"${a}";_sfpargs+=("${_sfparsearr[0]}");_sfphead="$_sfphead ${_sfparsearr[0]}";_sfpdesc="$_sfpdesc  ${_sfparsearr[0]};${_sfparsearr[1]}\n";elif [ $_sfcount -eq 2 ];then read -r -a _sfparsearr<<<"${a}";_sfflags["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfflags["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}=false;_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]};${_sfparsearr[2]}\n";elif [ $_sfcount -eq 4 ];then read -r -a _sfparsearr<<<"${a}";_sfargs["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfargs["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}="${_sfparsearr[3]}";_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]} ${_sfparsearr[2]};${_sfparsearr[4]} (default: ${_sfparsearr[3]})\n";else _sferr "Wrong argument declaration: $a";fi;done;for e in "${sfexamples[@]}";do _sfsubst=${e//";"};_sfcount="$(((${#e} - ${#_sfsubst})))";if [ $_sfcount -eq 1 ];then read -r -a _sfparsearr<<<"${e}";_sfexamples="$_sfexamples  ${_sfparsearr[0]};${_sfparsearr[1]}\n";else _sferr "Wrong example declaration: $e";fi;done;IFS=$OLDIFS;function sfusage { echo -n "Usage: $(basename $0)";if [ "$_sfodesc" != "" ];then echo -n " OPTIONS";fi;echo -e "$_sfphead";if [ ! -z ${sfdesc+x} ];then echo -e "\n$sfdesc";fi;if [ "$_sfpdesc" != "" ];then echo -e "\nPOSITIONAL ARGUMENTS";echo -e "$_sfpdesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfodesc" != "" ];then echo -e "\nOPTIONS";echo -e "$_sfodesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfexamples" != "" ];then echo -e "\nEXAMPLES";echo -e "$_sfexamples"|column -c 80 -s ";" -t -W 2;fi;if [ ! -z ${sfextra+x} ];then echo -e "\n$sfextra";fi;exit 0;};for a in "$@";do if [ "$a" == "-h" ]||[ "$a" == "--help" ];then sfusage;fi;done;while(("$#"));do if [ ! -z ${_sfflags["$1"]} ];then declare ${_sfflags["$1"]}=true;elif [ ! -z ${_sfargs["$1"]} ];then if [ -n "$2" ]&&[ "${2:0:1}" != "-" ];then declare ${_sfargs["$1"]}="$2";shift;else sferr "Argument for '$1' missing";fi;else if [ "${1:0:1}" == "-" ];then sferr "Unsupported argument: $1";else if [ "${#_sfpargs[@]}" != 0 ];then declare ${_sfpargs[0]}="$1";_sfpargs=("${_sfpargs[@]:1}");else sferr "Too many positional arguments";fi;fi;fi;shift;done;if [ ${#_sfpargs[@]} != 0 ];then for p in "${_sfpargs[@]}";do sferr "Positional argument '$p' missing" 0;done;exit 1;fi
   #+end_src
 
-* Usage
+** Usage
 
-  The general usage for writing a script with /sf/ is:
+   The general usage for writing a script with /sf/ is:
 
-  1. Declare /sf/-variables at the top of your script
-  2. Include /sf/
-  3. Write your script with already parsed arguments and useful output functions/text formatting variables
+   1. Declare /sf/-variables at the top of your script
+   2. Include /sf/
+   3. Write your script with already parsed arguments and useful output functions/text formatting variables
 
-** 1. /sf/-variables
+*** 1. /sf/-variables
 
-   This is the list of variables which can be set *before* including /sf/.
-   Every variable is optional.
+    This is the list of variables which can be set *before* including /sf/.
+    Every variable is optional.
 
-   | Name         | Description                                                                                         | Example                              |
-   |--------------+-----------------------------------------------------------------------------------------------------+--------------------------------------|
-   | =sfdesc=     | Description of the script                                                                           | ~sfdesc="This script does nothing."~ |
-   | =sfargs=     | Array for declaration of arguments, positional arguments and flags. Look below for more information | See [[#sfargs][below]]                            |
-   | =sfexamples= | Array for declaration of examples for the usage output. Look below for more information             | See also [[#sfexamples][below]]                       |
-   | =sfextra=    | Additional usage output                                                                             | ~sfextra="No copyright."~            |
+    | Name         | Description                                                                                         | Example                              |
+    |--------------+-----------------------------------------------------------------------------------------------------+--------------------------------------|
+    | =sfdesc=     | Description of the script                                                                           | ~sfdesc="This script does nothing."~ |
+    | =sfargs=     | Array for declaration of arguments, positional arguments and flags. Look below for more information | See [[#sfargs][below]]                            |
+    | =sfexamples= | Array for declaration of examples for the usage output. Look below for more information             | See also [[#sfexamples][below]]                       |
+    | =sfextra=    | Additional usage output                                                                             | ~sfextra="No copyright."~            |
 
-   A complete example which uses every variable can be found [[#example][below]].
+    A complete example which uses every variable can be found [[#example][below]].
 
-*** =sfargs=
-   :properties:
-   :custom_id: sfargs
-   :end:
+**** =sfargs=
+     :properties:
+     :custom_id: sfargs
+     :end:
 
-    This is an array of strings.
-    Every string defines an argument, a flag or an positional argument of the script.
-    The type is defined by the amount of semicolons in the string.
+     This is an array of strings.
+     Every string defines an argument, a flag or an positional argument of the script.
+     The type is defined by the amount of semicolons in the string.
 
-    | Type                | Declaration order                                               | Example                                                 |
-    |---------------------+-----------------------------------------------------------------+---------------------------------------------------------|
-    | Positional argument | =<name>;<description>=                                          | ~sfargs+=("FILE;File to read")~                         |
-    | Flag                | =<name>;<shorthand>;<description>=                              | ~sfargs+=("verbose;v;Enable verbose output")~           |
-    | Argument            | =<name>;<shorthand>;<value_name>;<default_value>;<description>= | ~sfargs+=("text;t;TEXT;done;Print TEXT when finished")~ |
+     | Type                | Declaration order                                               | Example                                                 |
+     |---------------------+-----------------------------------------------------------------+---------------------------------------------------------|
+     | Positional argument | =<name>;<description>=                                          | ~sfargs+=("FILE;File to read")~                         |
+     | Flag                | =<name>;<shorthand>;<description>=                              | ~sfargs+=("verbose;v;Enable verbose output")~           |
+     | Argument            | =<name>;<shorthand>;<value_name>;<default_value>;<description>= | ~sfargs+=("text;t;TEXT;done;Print TEXT when finished")~ |
 
-    The order of declaration defines the order in the usage output.
+     The order of declaration defines the order in the usage output.
 
-*** =sfexamples=
-   :properties:
-   :custom_id: sfexamples
-   :end:
+**** =sfexamples=
+     :properties:
+     :custom_id: sfexamples
+     :end:
 
-    This is also an array of strings.
-    Examples are of the form =<command>;<description>= and can be added to /sf/ like this:
+     This is also an array of strings.
+     Examples are of the form =<command>;<description>= and can be added to /sf/ like this:
 
-    : sfexamples+=("count 8;Count to eight")
+     : sfexamples+=("count 8;Count to eight")
 
-** 2. Including /sf/
+*** 2. Include /sf/
 
-   Grab the =sf= file from the repo, place it next to your script and source it with
-
-   #+begin_src sh
-     source "$(dirname $0)/sf"
-   #+end_src
-
-   *Or* just copy and paste the oneliner from above.
-
-** 3. Write your script
-
-   /sf/ deals with missing inputs and handles the parsing of arguments.
-   This means that after /sf/ was included *you can be sure that all variables have assigned values*.
-   Flags are either =false= or =true=, arguments have a provided value or the default value and positional arguments have a provided value.
-
-   The values are stored in variables with the name =$<name>=.
-   If you declared for example a flag like this:
-
-   #+begin_src sh
-     sfargs+=("verbose:v:Enable verbose output")
-   #+end_src
-
-   Then the variable =$verbose= exists with a value of either =false= or =true=.
-
-*** Output functions
-
-    /sf/ provides two output functions which can be used to throw warnings and errors.
-
-    | =sfwarn= | Takes a string as input and prints a warning                                                                                                                                   |
-    | =sferr=  | Takes a string as input, prints an error and exits with code 1. If an additional argument is passed (doesn't matter what), it will just throw an error and don't exit    |
-
-    Additionally the usage function is available:
-
-    | =sfusage= | Output the usage of the script and exit with code 0 |
-
-*** Text formatting variables
-
-    The following text formatting variables can be used to modify the output:
-
-    | =sftrst=   | Reset formatting             |
-    | =sftbf=    | Bold                         |
-    | =sftdim=   | Dim                          |
-    | =sftul=    | Underline                    |
-    | =sftblink= | Blinking                     |
-    | =sftinv=   | Invert foreground/background |
-    | =sfthide=  | Hidden                       |
-    | =sftk=     | Black                        |
-    | =sftr=     | Red                          |
-    | =sftg=     | Green                        |
-    | =sfty=     | Yellow                       |
-    | =sftb=     | Blue                         |
-    | =sftm=     | Magenta                      |
-    | =sftc=     | Cyan                         |
-    | =sftw=     | White                        |
-
-    The variables can be used directly in =echo=, no =-e= needed.
-    To echo the word "framework" bold and red use the variables for example like this:
+    Grab the =sf= file from the repo, place it next to your script and source it with
 
     #+begin_src sh
-      echo "${sftbf}${sftr}framework${sftrst}"
+      source "$(dirname $0)/sf"
     #+end_src
 
-* Example
-  :properties:
-  :custom_id: example
-  :end:
+    *Or* just copy and paste the oneliner from above.
 
-  Here is an example script which uses /sf/:
+*** 3. Write your script
 
-  #+begin_src sh
-    #!/usr/bin/env bash
+    /sf/ deals with missing inputs and handles the parsing of arguments.
+    This means that after /sf/ was included *you can be sure that all variables have assigned values*.
+    Flags are either =false= or =true=, arguments have a provided value or the default value and positional arguments have a provided value.
 
-    # ----------------------
-    # sf -- script framework
-    # ----------------------
+    The values are stored in variables with the name =$<name>=.
+    If you declared for example a flag like this:
 
-    # Declare sf variables
-    sfdesc="A simple counter."
+    #+begin_src sh
+      sfargs+=("verbose:v:Enable verbose output")
+    #+end_src
 
-    sfargs+=("N;Number to count")
-    sfargs+=("reverse;r;Count reverse")
-    sfargs+=("text;t;TEXT;done;Print TEXT when finished counting")
+    Then the variable =$verbose= exists with a value of either =false= or =true=.
 
-    sfexamples+=("count 8;Count to eight")
-    sfexamples+=("count -r -t go 3;Count reverse from 3 and print 'go'")
+**** Output functions
 
-    sfextra="No copyright at all."
+     /sf/ provides two output functions which can be used to throw warnings and errors.
 
-    # Include sf, this could be replaced with a long oneliner
-    source "$(dirname $0)/sf"
+     | =sfwarn= | Takes a string as input and prints a warning                                                                                                                                   |
+     | =sferr=  | Takes a string as input, prints an error and exits with code 1. If an additional argument is passed (doesn't matter what), it will just throw an error and don't exit    |
 
-    # ----------------------
-    # Actual script
-    # ----------------------
+     Additionally the usage function is available:
 
-    if [ "$N" -ge 11 ]; then                   # Use parsed argument
-        sferr "I can only count to/from 10"    # Throw an error and exit
-    fi
+     | =sfusage= | Output the usage of the script and exit with code 0 |
 
-    counter="$N"                                # Use parsed argument
-    echo -n "$sftbf"                            # Print everyting from here bold
-    while [ "$counter" -ge 1 ]; do
-        if [ "$reverse" == true ]; then         # Use parsed argument
-            echo "  $counter"
-        else
-            echo "  $(expr $N - $counter + 1)"  # Use parsed argument
-        fi
-        counter=$(expr $counter - 1)
-        sleep 1
-    done
-    echo -n "$sftrst"                           # Reset text formatting
-    echo "$text"                                # Use parsed argument
-  #+end_src
+**** Text formatting variables
 
-  The usage output of the above script is:
+     The following text formatting variables can be used to modify the output:
 
-  #+begin_example
-    Usage: count OPTIONS N
+     | =sftrst=   | Reset formatting             |
+     | =sftbf=    | Bold                         |
+     | =sftdim=   | Dim                          |
+     | =sftul=    | Underline                    |
+     | =sftblink= | Blinking                     |
+     | =sftinv=   | Invert foreground/background |
+     | =sfthide=  | Hidden                       |
+     | =sftk=     | Black                        |
+     | =sftr=     | Red                          |
+     | =sftg=     | Green                        |
+     | =sfty=     | Yellow                       |
+     | =sftb=     | Blue                         |
+     | =sftm=     | Magenta                      |
+     | =sftc=     | Cyan                         |
+     | =sftw=     | White                        |
 
-    A simple counter.
+     The variables can be used directly in =echo=, no =-e= needed.
+     To echo the word "framework" bold and red use the variables for example like this:
 
-    POSITIONAL ARGUMENTS
-      N  Number to count
+     #+begin_src sh
+       echo "${sftbf}${sftr}framework${sftrst}"
+     #+end_src
 
-    OPTIONS
-      -r, --reverse    Count reverse
-      -t, --text TEXT  Print TEXT when finished counting (default: done)
+** Example
+   :properties:
+   :custom_id: example
+   :end:
 
-    EXAMPLES
-      count 8           Count to eight
-      count -r -t go 3  Count reverse from 3 and print 'go'
+   Here is an example script which uses /sf/:
 
-    No copyright at all.
-  #+end_example
+   #+begin_src sh
+     #!/usr/bin/env bash
+
+     # ----------------------
+     # sf -- script framework
+     # ----------------------
+
+     # Declare sf variables
+     sfdesc="A simple counter."
+
+     sfargs+=("N;Number to count")
+     sfargs+=("reverse;r;Count reverse")
+     sfargs+=("text;t;TEXT;done;Print TEXT when finished counting")
+
+     sfexamples+=("count 8;Count to eight")
+     sfexamples+=("count -r -t go 3;Count reverse from 3 and print 'go'")
+
+     sfextra="No copyright at all."
+
+     # Include sf, this could be replaced with a long oneliner
+     source "$(dirname $0)/sf"
+
+     # ----------------------
+     # Actual script
+     # ----------------------
+
+     if [ "$N" -ge 11 ]; then                   # Use parsed argument
+         sferr "I can only count to/from 10"    # Throw an error and exit
+     fi
+
+     counter="$N"                                # Use parsed argument
+     echo -n "$sftbf"                            # Print everyting from here bold
+     while [ "$counter" -ge 1 ]; do
+         if [ "$reverse" == true ]; then         # Use parsed argument
+             echo "  $counter"
+         else
+             echo "  $(expr $N - $counter + 1)"  # Use parsed argument
+         fi
+         counter=$(expr $counter - 1)
+         sleep 1
+     done
+     echo -n "$sftrst"                           # Reset text formatting
+     echo "$text"                                # Use parsed argument
+   #+end_src
+
+   The usage output of the above script is:
+
+   #+begin_example
+     Usage: count OPTIONS N
+
+     A simple counter.
+
+     POSITIONAL ARGUMENTS
+       N  Number to count
+
+     OPTIONS
+       -r, --reverse    Count reverse
+       -t, --text TEXT  Print TEXT when finished counting (default: done)
+
+     EXAMPLES
+       count 8           Count to eight
+       count -r -t go 3  Count reverse from 3 and print 'go'
+
+     No copyright at all.
+   #+end_example
