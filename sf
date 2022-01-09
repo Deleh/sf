@@ -3,7 +3,7 @@
 # sf -- script framework (https://github.com/Deleh/sf)
 
 # Text formatting variables
-sftrst=$'\e[0m'
+sftrs=$'\e[0m'
 sftbf=$'\e[1m'
 sftdim=$'\e[2m'
 sftul=$'\e[4m'
@@ -22,19 +22,19 @@ sftw=$'\e[97m'
 
 # Public output functions
 function sferr {
-    echo -e "${sftbf}${sftr}ERROR${sftrst} $1"
+    echo -e "${sftbf}${sftr}ERROR${sftrs} $1"
     if [ -z "$2" ]; then
         exit 1
     fi
 }
 
 function sfwarn {
-    echo -e "${sftbf}${sfty}WARNING${sftrst} $1"
+    echo -e "${sftbf}${sfty}WARNING${sftrs} $1"
 }
 
 # Internal error function
 function _sferr {
-    echo -e "${sftbf}${sftr}SF PARSE ERROR${sftrst} $1"
+    echo -e "${sftbf}${sftr}SF PARSE ERROR${sftrs} $1"
     exit 1
 }
 
