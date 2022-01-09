@@ -127,11 +127,7 @@ IFS=$OLDIFS
 
 # Usage function
 function sfusage {
-    if [ -z ${sfname+x} ]; then
-        sfname=$(basename "$0")
-    else
-        echo -n "Usage: $sfname"
-    fi
+    echo -n "Usage: $(basename $0)"
     if [ "$_sfodesc" != "" ]; then
         echo -n " OPTIONS"
     fi

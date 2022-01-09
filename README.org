@@ -19,7 +19,7 @@
 
   #+begin_src sh
     # sf -- script framework (https://github.com/Deleh/sf)
-    sftrst=$'\e[0m';sftbf=$'\e[1m';sftdim=$'\e[2m';sftul=$'\e[4m';sftblink=$'\e[5m';sftinv=$'\e[7m';sfthide=$'\e[8m';sftk=$'\e[30m';sftr=$'\e[31m';sftg=$'\e[32m';sfty=$'\e[33m';sftb=$'\e[34m';sftm=$'\e[35m';sftc=$'\e[36m';sftw=$'\e[97m';function _sferr { echo -e "${sftbf}${sftr}SF PARSE ERROR${sftrst} $1";exit 1;};function sferr { echo -e "${sftbf}${sftr}ERROR${sftrst} $1";if [ -z "$2" ];then exit 1;fi;};function sfwarn { echo -e "${sftbf}${sfty}WARNING${sftrst} $1";};OLDIFS=$IFS;IFS=";";_sfphead="";_sfpdesc="";_sfodesc="";_sfexamples="";_sfpargs=();declare -A _sfflags;declare -A _sfargs;for a in "${sfargs[@]}";do _sfsubst=${a//";"};_sfcount="$(((${#a} - ${#_sfsubst})))";if [ $_sfcount -eq 1 ];then read -r -a _sfparsearr<<<"${a}";_sfpargs+=("${_sfparsearr[0]}");_sfphead="$_sfphead ${_sfparsearr[0]}";_sfpdesc="$_sfpdesc  ${_sfparsearr[0]};${_sfparsearr[1]}\n";elif [ $_sfcount -eq 2 ];then read -r -a _sfparsearr<<<"${a}";_sfflags["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfflags["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}=false;_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]};${_sfparsearr[2]}\n";elif [ $_sfcount -eq 4 ];then read -r -a _sfparsearr<<<"${a}";_sfargs["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfargs["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}="${_sfparsearr[3]}";_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]} ${_sfparsearr[2]};${_sfparsearr[4]} (default: ${_sfparsearr[3]})\n";else _sferr "Wrong argument declaration: $a";fi;done;for e in "${sfexamples[@]}";do _sfsubst=${e//";"};_sfcount="$(((${#e} - ${#_sfsubst})))";if [ $_sfcount -eq 1 ];then read -r -a _sfparsearr<<<"${e}";_sfexamples="$_sfexamples  ${_sfparsearr[0]};${_sfparsearr[1]}\n";else _sferr "Wrong example declaration: $e";fi;done;IFS=$OLDIFS;function sfusage { if [ -z ${sfname+x} ];then sfname=$(basename "$0");else echo -n "Usage: $sfname";fi;if [ "$_sfodesc" != "" ];then echo -n " OPTIONS";fi;echo -e "$_sfphead";if [ ! -z ${sfdesc+x} ];then echo -e "\n$sfdesc";fi;if [ "$_sfpdesc" != "" ];then echo -e "\nPOSITIONAL ARGUMENTS";echo -e "$_sfpdesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfodesc" != "" ];then echo -e "\nOPTIONS";echo -e "$_sfodesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfexamples" != "" ];then echo -e "\nEXAMPLES";echo -e "$_sfexamples"|column -c 80 -s ";" -t -W 2;fi;if [ ! -z ${sfextra+x} ];then echo -e "\n$sfextra";fi;exit 0;};for a in "$@";do if [ "$a" == "-h" ]||[ "$a" == "--help" ];then sfusage;fi;done;while(("$#"));do if [ ! -z ${_sfflags["$1"]} ];then declare ${_sfflags["$1"]}=true;elif [ ! -z ${_sfargs["$1"]} ];then if [ -n "$2" ]&&[ "${2:0:1}" != "-" ];then declare ${_sfargs["$1"]}="$2";shift;else sferr "Argument for '$1' missing";fi;else if [ "${1:0:1}" == "-" ];then sferr "Unsupported argument: $1";else if [ "${#_sfpargs[@]}" != 0 ];then declare ${_sfpargs[0]}="$1";_sfpargs=("${_sfpargs[@]:1}");else sferr "Too many positional arguments";fi;fi;fi;shift;done;if [ ${#_sfpargs[@]} != 0 ];then for p in "${_sfpargs[@]}";do sferr "Positional argument '$p' missing" 0;done;exit 1;fi
+    sftrst=$'\e[0m';sftbf=$'\e[1m';sftdim=$'\e[2m';sftul=$'\e[4m';sftblink=$'\e[5m';sftinv=$'\e[7m';sfthide=$'\e[8m';sftk=$'\e[30m';sftr=$'\e[31m';sftg=$'\e[32m';sfty=$'\e[33m';sftb=$'\e[34m';sftm=$'\e[35m';sftc=$'\e[36m';sftw=$'\e[97m';function _sferr { echo -e "${sftbf}${sftr}SF PARSE ERROR${sftrst} $1";exit 1;};function sferr { echo -e "${sftbf}${sftr}ERROR${sftrst} $1";if [ -z "$2" ];then exit 1;fi;};function sfwarn { echo -e "${sftbf}${sfty}WARNING${sftrst} $1";};OLDIFS=$IFS;IFS=";";_sfphead="";_sfpdesc="";_sfodesc="";_sfexamples="";_sfpargs=();declare -A _sfflags;declare -A _sfargs;for a in "${sfargs[@]}";do _sfsubst=${a//";"};_sfcount="$(((${#a} - ${#_sfsubst})))";if [ $_sfcount -eq 1 ];then read -r -a _sfparsearr<<<"${a}";_sfpargs+=("${_sfparsearr[0]}");_sfphead="$_sfphead ${_sfparsearr[0]}";_sfpdesc="$_sfpdesc  ${_sfparsearr[0]};${_sfparsearr[1]}\n";elif [ $_sfcount -eq 2 ];then read -r -a _sfparsearr<<<"${a}";_sfflags["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfflags["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}=false;_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]};${_sfparsearr[2]}\n";elif [ $_sfcount -eq 4 ];then read -r -a _sfparsearr<<<"${a}";_sfargs["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfargs["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}="${_sfparsearr[3]}";_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]} ${_sfparsearr[2]};${_sfparsearr[4]} (default: ${_sfparsearr[3]})\n";else _sferr "Wrong argument declaration: $a";fi;done;for e in "${sfexamples[@]}";do _sfsubst=${e//";"};_sfcount="$(((${#e} - ${#_sfsubst})))";if [ $_sfcount -eq 1 ];then read -r -a _sfparsearr<<<"${e}";_sfexamples="$_sfexamples  ${_sfparsearr[0]};${_sfparsearr[1]}\n";else _sferr "Wrong example declaration: $e";fi;done;IFS=$OLDIFS;function sfusage { echo -n "Usage: $(basename $0)";if [ "$_sfodesc" != "" ];then echo -n " OPTIONS";fi;echo -e "$_sfphead";if [ ! -z ${sfdesc+x} ];then echo -e "\n$sfdesc";fi;if [ "$_sfpdesc" != "" ];then echo -e "\nPOSITIONAL ARGUMENTS";echo -e "$_sfpdesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfodesc" != "" ];then echo -e "\nOPTIONS";echo -e "$_sfodesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfexamples" != "" ];then echo -e "\nEXAMPLES";echo -e "$_sfexamples"|column -c 80 -s ";" -t -W 2;fi;if [ ! -z ${sfextra+x} ];then echo -e "\n$sfextra";fi;exit 0;};for a in "$@";do if [ "$a" == "-h" ]||[ "$a" == "--help" ];then sfusage;fi;done;while(("$#"));do if [ ! -z ${_sfflags["$1"]} ];then declare ${_sfflags["$1"]}=true;elif [ ! -z ${_sfargs["$1"]} ];then if [ -n "$2" ]&&[ "${2:0:1}" != "-" ];then declare ${_sfargs["$1"]}="$2";shift;else sferr "Argument for '$1' missing";fi;else if [ "${1:0:1}" == "-" ];then sferr "Unsupported argument: $1";else if [ "${#_sfpargs[@]}" != 0 ];then declare ${_sfpargs[0]}="$1";_sfpargs=("${_sfpargs[@]:1}");else sferr "Too many positional arguments";fi;fi;fi;shift;done;if [ ${#_sfpargs[@]} != 0 ];then for p in "${_sfpargs[@]}";do sferr "Positional argument '$p' missing" 0;done;exit 1;fi
   #+end_src
 
 * Usage
@@ -37,7 +37,6 @@
 
    | Name         | Description                                                                                         | Example                              |
    |--------------+-----------------------------------------------------------------------------------------------------+--------------------------------------|
-   | =sfname=     | Name of the script in usage output (default: filename)                                              | ~sfname="calculator"~                |
    | =sfdesc=     | Description of the script                                                                           | ~sfdesc="This script does nothing."~ |
    | =sfargs=     | Array for declaration of arguments, positional arguments and flags. Look below for more information | See [[#sfargs][below]]                            |
    | =sfexamples= | Array for declaration of examples for the usage output. Look below for more information             | See also [[#sfexamples][below]]                       |
@@ -150,15 +149,14 @@
     # ----------------------
 
     # Declare sf variables
-    sfname="count"
     sfdesc="A simple counter."
 
     sfargs+=("N;Number to count")
     sfargs+=("reverse;r;Count reverse")
     sfargs+=("text;t;TEXT;done;Print TEXT when finished counting")
 
-    sfexamples+=("count 8; Count to eight")
-    sfexamples+=("count -r -t go 3; Count reverse from 3 and print 'go'")
+    sfexamples+=("count 8;Count to eight")
+    sfexamples+=("count -r -t go 3;Count reverse from 3 and print 'go'")
 
     sfextra="No copyright at all."
 
@@ -203,8 +201,8 @@
       -t, --text TEXT  Print TEXT when finished counting (default: done)
 
     EXAMPLES
-      count 8            Count to eight
-      count -r -t go 3   Count reverse from 3 and print 'go'
+      count 8           Count to eight
+      count -r -t go 3  Count reverse from 3 and print 'go'
 
     No copyright at all.
   #+end_example
