@@ -22,14 +22,12 @@ sftw=$'\e[97m'
 
 # Public output functions
 function sferr {
-    echo -e "${sftbf}${sftr}ERROR${sftrs} $1"
-    if [ -z "$2" ]; then
-        exit 1
-    fi
+    echo "${sftbf}${sftr}ERROR${sftrs} $1"
+    [ -z "$2" ] && exit 1
 }
 
 function sfwarn {
-    echo -e "${sftbf}${sfty}WARNING${sftrs} $1"
+    echo "${sftbf}${sfty}WARNING${sftrs} $1"
 }
 
 # Public input functions
@@ -50,7 +48,7 @@ function sfget {
 
 # Internal error function
 function _sferr {
-    echo -e "${sftbf}${sftr}SF PARSE ERROR${sftrs} $1"
+    echo "${sftbf}${sftr}SF PARSE ERROR${sftrs} $1"
     exit 1
 }
 
