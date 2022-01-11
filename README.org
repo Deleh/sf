@@ -30,7 +30,7 @@
 
    1. Declare /sf/-variables at the top of your script
    2. Include /sf/
-   3. Write your script with already parsed arguments and useful output functions/text formatting variables
+   3. Write your script with already parsed arguments, input functions, output functions and text formatting variables
 
 *** 1. /sf/-variables
 
