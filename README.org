@@ -85,16 +85,12 @@
     There are three methods of including /sf/:
 
     1. Grab the /sf/ file from this repo, place it next to your script and source it:
-       #+begin_src sh
-         source "$(dirname $0)/sf"
-       #+end_src
+       : source "$(dirname $0)/sf"
 
     2. Copy and paste the *oneliner* from the top of this README
 
     3. Source /sf/ from the web with =curl=:
-       #+begin_src sh
-         source <(curl -s https://raw.githubusercontent.com/Deleh/sf/master/sf)
-       #+end_src
+       : source <(curl -s https://raw.githubusercontent.com/Deleh/sf/master/sf)
        *Note* that this adds an online dependency to your script and if /sf/ changes your script may break.
        This method should only be used for testing purposes.
 
@@ -107,9 +103,7 @@
     The values are stored in variables with the name =$<name>=.
     If you declared for example a flag like this:
 
-    #+begin_src sh
-      sfargs+=("verbose;v;Enable verbose output")
-    #+end_src
+    : sfargs+=("verbose;v;Enable verbose output")
 
     Then the variable =$verbose= exists with a value of either =false= or =true=.
 
