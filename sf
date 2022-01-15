@@ -57,7 +57,7 @@ OLDIFS=$IFS
 IFS=";"
 _sfphead=""
 _sfpdesc=""
-_sfodesc=""
+_sfodesc="  -h, --help;Show this help message\n"
 _sfexamples=""
 _sfpargs=()
 declare -A _sfflags
@@ -144,8 +144,7 @@ IFS=$OLDIFS
 
 # Usage function
 function _sfusage {
-    echo -n "Usage: $(basename $0)"
-    [ "$_sfodesc" != "" ] && echo -n " [OPTIONS]"
+    echo -n "Usage: $(basename $0) [OPTIONS]"
     echo -ne "$_sfphead"
     [ "$sfparr" == true ] && echo -n " ..."
     echo
