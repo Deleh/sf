@@ -97,7 +97,7 @@
        #+begin_src sh
          source <(curl -s https://raw.githubusercontent.com/Deleh/sf/master/sf)
        #+end_src
-       *Note* that this adds an online dependency to your script and if /sf/ changes your script may break.
+       *Note* that this adds an online dependency to your script and if /sf/ changes, your script may break.
        This method should only be used for testing purposes.
 
 *** 3. Write your script
