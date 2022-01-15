@@ -32,17 +32,21 @@ function sfwarn {
 
 # Public input functions
 function sfask {
-    if [ "$2" == "" ]; then
-        read -p "$1? [${sftbf}Y${sftrs}/${sftbf}n${sftrs}] " sfin
-        [[ "$sfin" =~ y|Y|^$ ]] && sfin=true || sfin=false
-    else
-        read -p "$1? [${sftbf}y${sftrs}/${sftbf}N${sftrs}] " sfin
+    if [ -n "$2" ]; then
+        read -r -p "$1? [${sftbf}y${sftrs}/${sftbf}N${sftrs}] " sfin
         [[ "$sfin" =~ n|N|^$ ]] && sfin=false || sfin=true
+    else
+        read -r -p "$1? [${sftbf}Y${sftrs}/${sftbf}n${sftrs}] " sfin
+        [[ "$sfin" =~ y|Y|^$ ]] && sfin=true || sfin=false
     fi
 }
 
 function sfget {
-    [ "$2" != "" ] && read -p "$1 [${sftbf}$2${sftrs}]: " sfin || read -p "$1: " sfin
+    if [ -n "$2" ]; then
+        read -r -p "$1 [${sftbf}$2${sftrs}]: " sfin
+    else
+        read -r -p "$1: " sfin
+    fi
     [ "$sfin" == "" ] && [ "$2" != "" ] && sfin="$2"
 }
 
@@ -76,6 +80,7 @@ for a in "${sfargs[@]}"; do
         read -r -a _sfparsearr <<< "${a}"
 
         # Add to positional argument arry
+        [[ " ${_sfpargs[*]} " =~ ${_sfparsearr[0]} ]] && _sferr "'${_sfparsearr[0]}' is already set: $a"
         _sfpargs+=("${_sfparsearr[0]}")
 
         # Set usage header and description
@@ -89,11 +94,13 @@ for a in "${sfargs[@]}"; do
         read -r -a _sfparsearr <<< "${a}"
 
         # Set mappings
-        _sfflags["-${_sfparsearr[1]}"]="${_sfparsearr[0]}"
+        [ -n "${_sfflags["--${_sfparsearr[0]}"]}" ] && _sferr "'${_sfparsearr[0]}' is already set: $a"
         _sfflags["--${_sfparsearr[0]}"]="${_sfparsearr[0]}"
+        [ -n "${_sfflags["-${_sfparsearr[1]}"]}" ] && _sferr "'${_sfparsearr[1]}' is already set: $a"
+        _sfflags["-${_sfparsearr[1]}"]="${_sfparsearr[0]}"
 
         # Set default value
-        declare ${_sfparsearr[0]}=false
+        declare "${_sfparsearr[0]}"=false
 
         # Set description
         _sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]};${_sfparsearr[2]}\n"
@@ -105,11 +112,13 @@ for a in "${sfargs[@]}"; do
         read -r -a _sfparsearr <<< "${a}"
 
         # Set mappings
-        _sfargs["-${_sfparsearr[1]}"]="${_sfparsearr[0]}"
+        [ -n "${_sfargs["--${_sfparsearr[0]}"]}" ] && _sferr "'${_sfparsearr[0]}' is already set: $a"
         _sfargs["--${_sfparsearr[0]}"]="${_sfparsearr[0]}"
+        [ -n "${_sfargs["-${_sfparsearr[1]}"]}" ] && _sferr "'${_sfparsearr[1]}' is already set: $a"
+        _sfargs["-${_sfparsearr[1]}"]="${_sfparsearr[0]}"
 
         # Set default value
-        declare ${_sfparsearr[0]}="${_sfparsearr[3]}"
+        declare "${_sfparsearr[0]}"="${_sfparsearr[3]}"
 
         # Set description
         _sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]} ${_sfparsearr[2]};${_sfparsearr[4]} (default: ${_sfparsearr[3]})\n"
@@ -144,11 +153,11 @@ IFS=$OLDIFS
 
 # Usage function
 function _sfusage {
-    echo -n "Usage: $(basename $0) [OPTIONS]"
+    echo -n "Usage: $(basename "$0") [OPTIONS]"
     echo -ne "$_sfphead"
     [ "$sfparr" == true ] && echo -n " ..."
     echo
-    [ ! -z ${sfdesc+x} ] && echo -e "\n$sfdesc"
+    [ -n "${sfdesc}" ] && echo -e "\n$sfdesc"
     if [ "$_sfpdesc" != "" ]; then
         echo -e "\nPOSITIONAL ARGUMENTS"
         echo -e "$_sfpdesc" | column -c 80 -s ";" -t -W 2
@@ -161,7 +170,7 @@ function _sfusage {
         echo -e "\nEXAMPLES"
         echo -e "$_sfexamples" | column -c 80 -s ";" -t -W 2
     fi
-    if [ ! -z ${sfextra+x} ]; then
+    if [ -n "${sfextra}" ]; then
         echo -e "\n$sfextra"
     fi
     exit 0
@@ -177,15 +186,15 @@ done
 while (( "$#" )); do
 
     # Check if flag
-    if [ ! -z ${_sfflags["$1"]} ]; then
-        declare ${_sfflags["$1"]}=true
+    if [ -n "${_sfflags["$1"]}" ]; then
+        declare "${_sfflags["$1"]}"=true
 
     # Check if argument
-    elif [ ! -z ${_sfargs["$1"]} ]; then
+    elif [ -n "${_sfargs["$1"]}" ]; then
 
         # Check if argument has value
         if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
-            declare ${_sfargs["$1"]}="$2"
+            declare "${_sfargs["$1"]}"="$2"
             shift
         else
             sferr "Argument for '$1' missing"
@@ -199,7 +208,7 @@ while (( "$#" )); do
         else
             # Set positional argument
             if [ "${#_sfpargs[@]}" != 0 ]; then
-                declare ${_sfpargs[0]}="$1"
+                declare "${_sfpargs[0]}"="$1"
                 [ "$sfparr" == true ] && _sfplast="${_sfpargs[0]}" && _sfparr=("$1")
                 _sfpargs=("${_sfpargs[@]:1}")
             elif [ "$sfparr" == true ]; then
@@ -213,10 +222,10 @@ while (( "$#" )); do
 done
 
 # Parse additional arguments if 'sfparr' is set
-[ "$sfparr" == true ] && [ "${#_sfparr[@]}" -ge 1 ] && read -r -a ${_sfplast} <<< "${_sfparr[@]}"
+[ "$sfparr" == true ] && [ "${#_sfparr[@]}" -ge 1 ] && read -r -a "${_sfplast?}" <<< "${_sfparr[@]}"
 
 # Check if positional arguments left
-if [ "$sfparr" != true ] && [ ${#_sfpargs[@]} != 0 ]; then
+if [ "$sfparr" != true ] && [ "${#_sfpargs[@]}" -ge 1 ]; then
     for p in "${_sfpargs[@]}"; do
         sferr "Positional argument '$p' missing" 0
     done
