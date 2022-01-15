@@ -119,6 +119,9 @@ for a in "${sfargs[@]}"; do
     fi
 done
 
+# Check if at least one positional argument is set if 'sfparr' is used
+[ "$sfparr" == true ] && [ "${#_sfpargs[@]}" == 0 ] && _sferr "At least one positional argument must be used with 'sfparr'"
+
 # Parse examples
 for e in "${sfexamples[@]}"; do
 
@@ -143,7 +146,9 @@ IFS=$OLDIFS
 function _sfusage {
     echo -n "Usage: $(basename $0)"
     [ "$_sfodesc" != "" ] && echo -n " [OPTIONS]"
-    echo -e "$_sfphead"
+    echo -ne "$_sfphead"
+    [ "$sfparr" == true ] && echo -n " ..."
+    echo
     [ ! -z ${sfdesc+x} ] && echo -e "\n$sfdesc"
     if [ "$_sfpdesc" != "" ]; then
         echo -e "\nPOSITIONAL ARGUMENTS"
@@ -196,7 +201,10 @@ while (( "$#" )); do
             # Set positional argument
             if [ "${#_sfpargs[@]}" != 0 ]; then
                 declare ${_sfpargs[0]}="$1"
+                [ "$sfparr" == true ] && _sfplast="${_sfpargs[0]}" && _sfparr=("$1")
                 _sfpargs=("${_sfpargs[@]:1}")
+            elif [ "$sfparr" == true ]; then
+                _sfparr+=("$1")
             else
                 sferr "Too many positional arguments"
             fi
@@ -205,8 +213,11 @@ while (( "$#" )); do
     shift
 done
 
+# Parse additional arguments if 'sfparr' is set
+[ "$sfparr" == true ] && [ "${#_sfparr[@]}" -ge 1 ] && read -r -a ${_sfplast} <<< "${_sfparr[@]}"
+
 # Check if positional arguments left
-if [ ${#_sfpargs[@]} != 0 ]; then
+if [ "$sfparr" != true ] && [ ${#_sfpargs[@]} != 0 ]; then
     for p in "${_sfpargs[@]}"; do
         sferr "Positional argument '$p' missing" 0
     done
@@ -214,4 +225,4 @@ if [ ${#_sfpargs[@]} != 0 ]; then
 fi
 
 # Unset all internal variables and functions
-unset a e _sfphead _sfpdesc _sfodesc _sfexamples _sfpargs _sfflags _sfargs _sferr _sfusage
+unset a e _sfargs _sferr _sfexamples _sfflags _sfodesc _sfpargs _sfparr _sfpdesc _sfphead _sfplast _sfusage
