@@ -1,9 +1,6 @@
 * sf -- script framework
 
-  #+begin_center
-    #+caption: Logo
-    [[./images/logo.png]]
-  #+end_center
+  [[./images/logo.png]]
 
   /script framework/ can be used to simplify and beautify bash scripts.
   It provides:
