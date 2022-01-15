@@ -1,5 +1,10 @@
 * sf -- script framework
 
+  #+begin_center
+    #+caption: Logo
+  [[  ./images/logo.png]]
+  #+end_center
+
   /script framework/ can be used to simplify and beautify bash scripts.
   It provides:
 
@@ -13,7 +18,7 @@
   Or keep your scripts self-contained and include it as an oneliner.
 
   The usage is pretty self-explanatory once you have seen it.
-  If you're curious and don't want to read through the documentation, head directly to the [[#example][example]].
+  If you're curious and don't want to read through the documentation, head directly to the [[#examples][examples]].
 
   -----
 
@@ -21,8 +26,12 @@
 
   #+begin_src sh
     # sf -- script framework (https://github.com/Deleh/sf)
-    sftrs=$'\e[0m';sftbf=$'\e[1m';sftdim=$'\e[2m';sftul=$'\e[4m';sftblk=$'\e[5m';sftinv=$'\e[7m';sfthd=$'\e[8m';sftclr=$'\e[1A\e[K';sftk=$'\e[30m';sftr=$'\e[31m';sftg=$'\e[32m';sfty=$'\e[33m';sftb=$'\e[34m';sftm=$'\e[35m';sftc=$'\e[36m';sftw=$'\e[97m';function sferr { echo "${sftbf}${sftr}ERROR${sftrs} $1";[ -z "$2" ]&&exit 1;};function sfwarn { echo "${sftbf}${sfty}WARNING${sftrs} $1";};function sfask { if [ "$2" == "" ];then read -p "$1? [${sftbf}Y${sftrs}/${sftbf}n${sftrs}] " sfin;[[ "$sfin" =~ y|Y|^$ ]]&&sfin=true||sfin=false;else read -p "$1? [${sftbf}y${sftrs}/${sftbf}N${sftrs}] " sfin;[[ "$sfin" =~ n|N|^$ ]]&&sfin=false||sfin=true;fi;};function sfget { [ "$2" != "" ]&&read -p "$1 [${sftbf}$2${sftrs}]: " sfin||read -p "$1: " sfin;[ "$sfin" == "" ]&&[ "$2" != "" ]&&sfin="$2";};function _sferr { echo "${sftbf}${sftr}SF PARSE ERROR${sftrs} $1";exit 1;};OLDIFS=$IFS;IFS=";";_sfphead="";_sfpdesc="";_sfodesc="";_sfexamples="";_sfpargs=();declare -A _sfflags;declare -A _sfargs;for a in "${sfargs[@]}";do _sfsubst=${a//";"};_sfcount="$(((${#a} - ${#_sfsubst})))";if [ $_sfcount -eq 1 ];then read -r -a _sfparsearr<<<"${a}";_sfpargs+=("${_sfparsearr[0]}");_sfphead="$_sfphead ${_sfparsearr[0]}";_sfpdesc="$_sfpdesc  ${_sfparsearr[0]};${_sfparsearr[1]}\n";elif [ $_sfcount -eq 2 ];then read -r -a _sfparsearr<<<"${a}";_sfflags["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfflags["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}=false;_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]};${_sfparsearr[2]}\n";elif [ $_sfcount -eq 4 ];then read -r -a _sfparsearr<<<"${a}";_sfargs["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfargs["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}="${_sfparsearr[3]}";_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]} ${_sfparsearr[2]};${_sfparsearr[4]} (default: ${_sfparsearr[3]})\n";else _sferr "Wrong argument declaration: $a";fi;done;for e in "${sfexamples[@]}";do _sfsubst=${e//";"};_sfcount="$(((${#e} - ${#_sfsubst})))";if [ $_sfcount -eq 1 ];then read -r -a _sfparsearr<<<"${e}";_sfexamples="$_sfexamples  ${_sfparsearr[0]};${_sfparsearr[1]}\n";else _sferr "Wrong example declaration: $e";fi;done;IFS=$OLDIFS;function _sfusage { echo -n "Usage: $(basename $0)";[ "$_sfodesc" != "" ]&&echo -n " [OPTIONS]";echo -e "$_sfphead";[ ! -z ${sfdesc+x} ]&&echo -e "\n$sfdesc";if [ "$_sfpdesc" != "" ];then echo -e "\nPOSITIONAL ARGUMENTS";echo -e "$_sfpdesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfodesc" != "" ];then echo -e "\nOPTIONS";echo -e "$_sfodesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfexamples" != "" ];then echo -e "\nEXAMPLES";echo -e "$_sfexamples"|column -c 80 -s ";" -t -W 2;fi;if [ ! -z ${sfextra+x} ];then echo -e "\n$sfextra";fi;exit 0;};for a in "$@";do [ "$a" == "-h" ]||[ "$a" == "--help" ]&&_sfusage;done;while(("$#"));do if [ ! -z ${_sfflags["$1"]} ];then declare ${_sfflags["$1"]}=true;elif [ ! -z ${_sfargs["$1"]} ];then if [ -n "$2" ]&&[ "${2:0:1}" != "-" ];then declare ${_sfargs["$1"]}="$2";shift;else sferr "Argument for '$1' missing";fi;else if [ "${1:0:1}" == "-" ];then sferr "Unsupported argument: $1";else if [ "${#_sfpargs[@]}" != 0 ];then declare ${_sfpargs[0]}="$1";_sfpargs=("${_sfpargs[@]:1}");else sferr "Too many positional arguments";fi;fi;fi;shift;done;if [ ${#_sfpargs[@]} != 0 ];then for p in "${_sfpargs[@]}";do sferr "Positional argument '$p' missing" 0;done;exit 1;fi;unset a e _sfphead _sfpdesc _sfodesc _sfexamples _sfpargs _sfflags _sfargs _sferr _sfusage
+    sftrs=$'\e[0m';sftbf=$'\e[1m';sftdim=$'\e[2m';sftul=$'\e[4m';sftblk=$'\e[5m';sftinv=$'\e[7m';sfthd=$'\e[8m';sftclr=$'\e[1A\e[K';sftk=$'\e[30m';sftr=$'\e[31m';sftg=$'\e[32m';sfty=$'\e[33m';sftb=$'\e[34m';sftm=$'\e[35m';sftc=$'\e[36m';sftw=$'\e[97m';function sferr { echo "${sftbf}${sftr}ERROR${sftrs} $1";[ -z "$2" ]&&exit 1;};function sfwarn { echo "${sftbf}${sfty}WARNING${sftrs} $1";};function sfask { if [ "$2" == "" ];then read -p "$1? [${sftbf}Y${sftrs}/${sftbf}n${sftrs}] " sfin;[[ "$sfin" =~ y|Y|^$ ]]&&sfin=true||sfin=false;else read -p "$1? [${sftbf}y${sftrs}/${sftbf}N${sftrs}] " sfin;[[ "$sfin" =~ n|N|^$ ]]&&sfin=false||sfin=true;fi;};function sfget { [ "$2" != "" ]&&read -p "$1 [${sftbf}$2${sftrs}]: " sfin||read -p "$1: " sfin;[ "$sfin" == "" ]&&[ "$2" != "" ]&&sfin="$2";};function _sferr { echo "${sftbf}${sftr}SF PARSE ERROR${sftrs} $1";exit 1;};OLDIFS=$IFS;IFS=";";_sfphead="";_sfpdesc="";_sfodesc="";_sfexamples="";_sfpargs=();declare -A _sfflags;declare -A _sfargs;for a in "${sfargs[@]}";do _sfsubst=${a//";"};_sfcount="$(((${#a} - ${#_sfsubst})))";if [ $_sfcount -eq 1 ];then read -r -a _sfparsearr<<<"${a}";_sfpargs+=("${_sfparsearr[0]}");_sfphead="$_sfphead ${_sfparsearr[0]}";_sfpdesc="$_sfpdesc  ${_sfparsearr[0]};${_sfparsearr[1]}\n";elif [ $_sfcount -eq 2 ];then read -r -a _sfparsearr<<<"${a}";_sfflags["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfflags["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}=false;_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]};${_sfparsearr[2]}\n";elif [ $_sfcount -eq 4 ];then read -r -a _sfparsearr<<<"${a}";_sfargs["-${_sfparsearr[1]}"]="${_sfparsearr[0]}";_sfargs["--${_sfparsearr[0]}"]="${_sfparsearr[0]}";declare ${_sfparsearr[0]}="${_sfparsearr[3]}";_sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]} ${_sfparsearr[2]};${_sfparsearr[4]} (default: ${_sfparsearr[3]})\n";else _sferr "Wrong argument declaration: $a";fi;done;[ "$sfparr" == true ]&&[ "${#_sfpargs[@]}" == 0 ]&&_sferr "At least one positional argument must be used with 'sfparr'";for e in "${sfexamples[@]}";do _sfsubst=${e//";"};_sfcount="$(((${#e} - ${#_sfsubst})))";if [ $_sfcount -eq 1 ];then read -r -a _sfparsearr<<<"${e}";_sfexamples="$_sfexamples  ${_sfparsearr[0]};${_sfparsearr[1]}\n";else _sferr "Wrong example declaration: $e";fi;done;IFS=$OLDIFS;function _sfusage { echo -n "Usage: $(basename $0)";[ "$_sfodesc" != "" ]&&echo -n " [OPTIONS]";echo -ne "$_sfphead";[ "$sfparr" == true ]&&echo -n " ...";echo;[ ! -z ${sfdesc+x} ]&&echo -e "\n$sfdesc";if [ "$_sfpdesc" != "" ];then echo -e "\nPOSITIONAL ARGUMENTS";echo -e "$_sfpdesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfodesc" != "" ];then echo -e "\nOPTIONS";echo -e "$_sfodesc"|column -c 80 -s ";" -t -W 2;fi;if [ "$_sfexamples" != "" ];then echo -e "\nEXAMPLES";echo -e "$_sfexamples"|column -c 80 -s ";" -t -W 2;fi;if [ ! -z ${sfextra+x} ];then echo -e "\n$sfextra";fi;exit 0;};for a in "$@";do [ "$a" == "-h" ]||[ "$a" == "--help" ]&&_sfusage;done;while(("$#"));do if [ ! -z ${_sfflags["$1"]} ];then declare ${_sfflags["$1"]}=true;elif [ ! -z ${_sfargs["$1"]} ];then if [ -n "$2" ]&&[ "${2:0:1}" != "-" ];then declare ${_sfargs["$1"]}="$2";shift;else sferr "Argument for '$1' missing";fi;else if [ "${1:0:1}" == "-" ];then sferr "Unsupported argument: $1";else if [ "${#_sfpargs[@]}" != 0 ];then declare ${_sfpargs[0]}="$1";[ "$sfparr" == true ]&&_sfplast="${_sfpargs[0]}"&&_sfparr=("$1");_sfpargs=("${_sfpargs[@]:1}");elif [ "$sfparr" == true ];then _sfparr+=("$1");else sferr "Too many positional arguments";fi;fi;fi;shift;done;[ "$sfparr" == true ]&&[ "${#_sfparr[@]}" -ge 1 ]&&read -r -a ${_sfplast}<<<"${_sfparr[@]}";if [ "$sfparr" != true ]&&[ ${#_sfpargs[@]} != 0 ];then for p in "${_sfpargs[@]}";do sferr "Positional argument '$p' missing" 0;done;exit 1;fi;unset a e _sfargs _sferr _sfexamples _sfflags _sfodesc _sfpargs _sfparr _sfpdesc _sfphead _sfplast _sfusage
   #+end_src
+
+** Requirements
+
+   - At least *Bash 4.x*
 
 ** Usage
 
@@ -37,14 +46,15 @@
     This is the list of variables which can be set *before* including /sf/.
     Everything is optional.
 
-    | Name         | Description                                                                                         | Example                              |
-    |--------------+-----------------------------------------------------------------------------------------------------+--------------------------------------|
-    | =sfdesc=     | Description of the script                                                                           | ~sfdesc="This script does nothing."~ |
-    | =sfargs=     | Array for declaration of arguments, positional arguments and flags. Look below for more information | See [[#sfargs][below]]                            |
-    | =sfexamples= | Array for declaration of examples for the usage output. Look below for more information             | See also [[#sfexamples][below]]                       |
-    | =sfextra=    | Additional usage output                                                                             | ~sfextra="No copyright."~            |
+    | Name         | Description                                                                                         | Example                                |
+    |--------------+-----------------------------------------------------------------------------------------------------+----------------------------------------|
+    | =sfdesc=     | Description of the script                                                                           | ~ sfdesc="This script does nothing." ~ |
+    | =sfargs=     | Array for declaration of arguments, positional arguments and flags. Look below for more information | See [[#sfargs][below]]                              |
+    | =sfparr=     | Flag which indicates if the last declared positional argument should be treated as array            | ~ sfparr=true ~                        |
+    | =sfexamples= | Array for declaration of examples for the usage output. Look below for more information             | See also [[#sfexamples][below]]                         |
+    | =sfextra=    | Additional usage output                                                                             | ~ sfextra="No copyright." ~            |
 
-    A complete example which uses every variable can be found [[#example][below]].
+    Examples which show the usage of all variables can be found [[#examples][below]] and in the =examples= directory.
 
 **** =sfargs=
      :properties:
@@ -167,75 +177,135 @@
        echo "${sftbf}${sftr}framework${sftrs}"
      #+end_src
 
-** Example
+** Examples
    :properties:
-   :custom_id: example
+   :custom_id: examples
    :end:
 
-   Here is an example script which uses /sf/:
+   All examples can also be found in the =examples= directory.
+   Play around with the /sf/-variables and see what happens.
 
-   #+begin_src sh
-     #!/usr/bin/env bash
+*** Count
 
-     # ----------------------
-     # sf -- script framework
-     # ----------------------
+    This example script counts from/to a number:
 
-     # Declare sf variables
-     sfdesc="A simple counter."
+    #+begin_src sh
+      #!/usr/bin/env bash
 
-     sfargs+=("N;Number to count")
-     sfargs+=("reverse;r;Count reverse")
-     sfargs+=("text;t;TEXT;done;Print TEXT when finished counting")
+      # ----------------------
+      # sf -- script framework
+      # ----------------------
 
-     sfexamples+=("count 8;Count to eight")
-     sfexamples+=("count -r -t go 3;Count reverse from 3 and print 'go'")
+      # Declare sf variables
+      sfdesc="A simple counter."
 
-     sfextra="No copyright at all."
+      sfargs+=("N;Number to count")
+      sfargs+=("reverse;r;Count reverse")
+      sfargs+=("text;t;TEXT;done;Print TEXT when finished counting")
 
-     # Include sf, this could be replaced with a long oneliner
-     source "$(dirname $0)/sf"
+      sfexamples+=("count 8;Count to eight")
+      sfexamples+=("count -r -t go 3;Count reverse from 3 and print 'go'")
 
-     # ----------------------
-     # Actual script
-     # ----------------------
+      sfextra="No copyright at all."
 
-     if [ "$N" -ge 11 ]; then                   # Use parsed argument
-         sferr "I can only count to/from 10"    # Throw an error and exit
-     fi
+      # Include sf, this could be replaced with a long oneliner
+      source "$(dirname $0)/sf"
 
-     counter="$N"                                # Use parsed argument
-     echo -n "$sftbf"                            # Print everyting from here bold
-     while [ "$counter" -ge 1 ]; do
-         if [ "$reverse" == true ]; then         # Use parsed argument
-             echo "  $counter"
-         else
-             echo "  $(expr $N - $counter + 1)"  # Use parsed argument
-         fi
-         counter=$(expr $counter - 1)
-         sleep 1
-     done
-     echo -n "$sftrs"                            # Reset text formatting
-     echo "$text"                                # Use parsed argument
-   #+end_src
+      # ----------------------
+      # Actual script
+      # ----------------------
 
-   The usage output of the above script is:
+      if [ "$N" -ge 11 ]; then                    # Use parsed positional argument
+          sferr "I can only count to/from 10"     # Throw an error and exit
+      fi
 
-   #+begin_example
-     Usage: count [OPTIONS] N
+      counter="$N"                                # Use parsed positional argument
+      echo -n "$sftbf"                            # Print everyting from here bold
+      while [ "$counter" -ge 1 ]; do
+          if [ "$reverse" == true ]; then         # Use parsed flag
+              echo "  $counter"
+          else
+              echo "  $(expr $N - $counter + 1)"  # Use parsed positional argument
+          fi
+          counter=$(expr $counter - 1)
+          sleep 1
+      done
+      echo -n "$sftrs"                            # Reset text formatting
+      echo "$text"                                # Use parsed argument
+    #+end_src
 
-     A simple counter.
+    The usage output of the counter script is:
 
-     POSITIONAL ARGUMENTS
-       N  Number to count
+    #+begin_example
+      Usage: count [OPTIONS] N
 
-     OPTIONS
-       -r, --reverse    Count reverse
-       -t, --text TEXT  Print TEXT when finished counting (default: done)
+      A simple counter.
 
-     EXAMPLES
-       count 8           Count to eight
-       count -r -t go 3  Count reverse from 3 and print 'go'
+      POSITIONAL ARGUMENTS
+        N  Number to count
 
-     No copyright at all.
-   #+end_example
+      OPTIONS
+        -r, --reverse    Count reverse
+        -t, --text TEXT  Print TEXT when finished counting (default: done)
+
+      EXAMPLES
+        count 8           Count to eight
+        count -r -t go 3  Count reverse from 3 and print 'go'
+
+      No copyright at all.
+    #+end_example
+
+*** Add
+
+    This script adds numbers and shows the usage of =sfparr=:
+
+    #+begin_src sh
+      #!/usr/bin/env bash
+
+      # ----------------------
+      # sf -- script framework
+      # ----------------------
+
+      # Declare sf variables
+      sfdesc="Calculate the sum of multiple numbers."
+
+      sfargs+=("NUMBERS;Numbers which will be added")
+      sfargs+=("verbose;v;Enable verbose output")
+
+      sfparr=true  # Treat the last declared positional argument as array
+
+      # Include sf, this could be replaced with a long oneliner
+      source "$(dirname $0)/sf"
+
+      # ----------------------
+      # Actual script
+      # ----------------------
+
+      sum=0
+
+      for n in "${NUMBERS[@]}"; do         # Use parsed positional argument array
+          if [ "$verbose" == true ]; then  # Use parsed flag
+              echo -n "$sum + $n = "
+          fi
+          sum="$(expr $sum + $n)"
+          if [ "$verbose" == true ]; then  # Use parsed flag
+              echo "$sftbf$sum$sftrs"      # Use text formatting variables
+          fi
+      done
+
+      echo "The sum is: $sftbf$sum$sftrs"  # Use text formatting variables
+    #+end_src
+
+    And here is the produced usage:
+
+    #+begin_example
+      Usage: add [OPTIONS] NUMBERS ...
+
+      Calculate the sum of multiple numbers.
+
+      POSITIONAL ARGUMENTS
+        NUMBERS  Numbers which will be added
+
+      OPTIONS
+        -v, --verbose  Enable verbose output
+    #+end_example
