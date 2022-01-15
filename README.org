@@ -81,7 +81,7 @@
      #+begin_src sh
        sfexamples+=("count 8;Count to eight")
      #+end_src
-       
+
 *** 2. Include /sf/
 
     There are three methods of including /sf/:
@@ -123,31 +123,9 @@
      | =sfask= | Takes a string as input and asks for /yes/ or /no/. If an additional argument is provided (doesn't matter what), /no/ will be default. =$sfin= is either =true= or =false= |
      | =sfget= | Takes a string as input and asks for user input. If a second argument is provided, this will be the default if no user input was entered                                   |
 
-     Here is a small snippet to show the usage:
+     *Note* that the functions append a colon/question mark to the given string.
 
-     #+begin_src bash
-       sfget "Please enter your name" "John"
-       echo "Hello $sfin"
-       sfask "Do you want to proceed"
-       if [ "$sfin" == true ]; then
-           sfask "Are you sure" "no"
-           [ "$sfin" == true ] && echo "Please continue..." || echo "Bye"
-       else
-           echo "Bye"
-       fi
-     #+end_src
-
-     And the execution:
-
-     #+begin_example
-       Please enter your name [John]: Jane
-       Hello Jane!
-       Do you want to proceed? [Y/n]
-       Are you sure? [y/N] y
-       Please continue...
-     #+end_example
-
-     *Note* that the colon and question marks get added by the functions.
+     Look at the [[#greet][greet]] example to see the functions in action.
 
 **** Output functions
 
@@ -238,10 +216,10 @@
           sleep 1
       done
       echo -n "$sftrs"                            # Reset text formatting
-      echo "$text"                                # Use parsed argument
+      echo "  $text"                              # Use parsed argument
     #+end_src
 
-    The usage output of the counter script is:
+    The usage output of the script is:
 
     #+begin_example
       Usage: count [OPTIONS] N
@@ -261,6 +239,16 @@
         count -r -t go 3  Count reverse from 3 and print 'go'
 
       No copyright at all.
+    #+end_example
+
+    An example execution looks like this:
+
+    #+begin_example
+      $ ./count -r -t go 3
+        3
+        2
+        1
+        go
     #+end_example
 
 *** Add
@@ -319,7 +307,22 @@
         -v, --verbose  Enable verbose output
     #+end_example
 
+    An example call looks like this:
+
+    #+begin_example
+      $ ./add -v 1 2 3 4 5
+      0 + 1 = 1
+      1 + 2 = 3
+      3 + 3 = 6
+      6 + 4 = 10
+      10 + 5 = 15
+      The sum is: 15
+    #+end_example
+
 *** Greet
+    :properties:
+    :custom_id: greet
+    :end:
 
     This example greets a user and asks for the age.
     It shows the usage of input functions:
@@ -346,7 +349,7 @@
 
       sfask "Do you want to tell me your age"    # Ask for YES/no
       if [ "$sfin" == true ]; then               # Use answer
-          sfget "Enter your Age"                 # Get input
+          sfget "Enter your Age" "80"            # Get input with default value
           sfask "Is $sfin really your age" "no"  # Use input and ask for yes/NO
           if [ "$sfin" == true ]; then           # Use answer
               echo "Great!"
@@ -365,4 +368,16 @@
 
       OPTIONS
         -h, --help  Show this help message
+    #+end_example
+
+    An example call looks like this:
+
+    #+begin_example
+      $ ./greet
+      Enter your name: Jane
+      Hello Jane!
+      Do you want to tell me your age? [Y/n]
+      Enter your Age [80]: 75
+      Is 75 really your age? [y/N] y
+      Great!
     #+end_example

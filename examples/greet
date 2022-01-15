@@ -19,7 +19,7 @@ echo "Hello ${sfin}!"                      # Use input
 
 sfask "Do you want to tell me your age"    # Ask for YES/no
 if [ "$sfin" == true ]; then               # Use answer
-    sfget "Enter your Age"                 # Get input
+    sfget "Enter your Age" "80"            # Get input with default value
     sfask "Is $sfin really your age" "no"  # Use input and ask for yes/NO
     if [ "$sfin" == true ]; then           # Use answer
         echo "Great!"

@@ -39,4 +39,4 @@ while [ "$counter" -ge 1 ]; do
     sleep 1
 done
 echo -n "$sftrs"                            # Reset text formatting
-echo "$text"                                # Use parsed argument
+echo "  $text"                              # Use parsed argument
