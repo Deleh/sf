@@ -2,7 +2,7 @@
 
   [[./images/logo.png]]
 
-  /script framework/ can be used to simplify and beautify bash scripts.
+  /script framework/ can be used to simplify and beautify Bash scripts.
   It provides:
 
   - Argument parsing
