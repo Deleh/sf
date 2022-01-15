@@ -80,7 +80,7 @@ for a in "${sfargs[@]}"; do
         read -r -a _sfparsearr <<< "${a}"
 
         # Add to positional argument arry
-        [[ " ${_sfpargs[*]} " =~ ${_sfparsearr[0]} ]] && _sferr "'${_sfparsearr[0]}' is already set: $a"
+        [[ " ${_sfpargs[*]} " =~ " ${_sfparsearr[0]} " ]] && _sferr "'${_sfparsearr[0]}' is already set: $a"
         _sfpargs+=("${_sfparsearr[0]}")
 
         # Set usage header and description
