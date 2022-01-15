@@ -241,7 +241,7 @@
       No copyright at all.
     #+end_example
 
-    An example execution looks like this:
+    An example call looks like this:
 
     #+begin_example
       $ ./count -r -t go 3
