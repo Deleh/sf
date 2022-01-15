@@ -331,14 +331,14 @@
       # Actual script
       # ----------------------
 
-      sfget "Enter your name"                                      # Get input
-      echo "Hello ${sfin}!"                                        # Use input
+      sfget "Enter your name"                    # Get input
+      echo "Hello ${sfin}!"                      # Use input
 
-      sfask "Do you want to tell me your age"                      # Ask for YES/no
-      if [ "$sfin" == true ]; then                                 # Use answer
-          sfget "Enter your Age"                                   # Get input
-          sfask "Is ${sftbf}${sfin}${sftrs} really your age" "no"  # Use input and ask for yes/NO
-          if [ "$sfin" == true ]; then                             # Use answer
+      sfask "Do you want to tell me your age"    # Ask for YES/no
+      if [ "$sfin" == true ]; then               # Use answer
+          sfget "Enter your Age"                 # Get input
+          sfask "Is $sfin really your age" "no"  # Use input and ask for yes/NO
+          if [ "$sfin" == true ]; then           # Use answer
               echo "Great!"
           else
               echo "I knew it!"
