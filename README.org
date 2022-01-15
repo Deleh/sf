@@ -82,13 +82,21 @@
 
 *** 2. Include /sf/
 
-    Grab the =sf= file from the repo, place it next to your script and source it with
+    There are three methods of including /sf/:
 
-    #+begin_src sh
-      source "$(dirname $0)/sf"
-    #+end_src
+    1. Grab the /sf/ file from this repo, place it next to your script and source it:
+       #+begin_src sh
+         source "$(dirname $0)/sf"
+       #+end_src
 
-    *Or* just copy and paste the oneliner from above.
+    2. Copy and paste the *oneliner* from the top of this README
+
+    3. Source /sf/ from the web with =curl=:
+       #+begin_src sh
+         source <(curl -s https://raw.githubusercontent.com/Deleh/sf/master/sf)
+       #+end_src
+       *Note* that this adds an online dependency to your script and if /sf/ changes your script may break.
+       This method should only be used for testing purposes.
 
 *** 3. Write your script
 
