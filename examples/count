@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+# ----------------------
+# sf -- script framework
+# ----------------------
+
+# Declare sf variables
+sfdesc="A simple counter."
+
+sfargs+=("N;Number to count")
+sfargs+=("reverse;r;Count reverse")
+sfargs+=("text;t;TEXT;done;Print TEXT when finished counting")
+
+sfexamples+=("count 8;Count to eight")
+sfexamples+=("count -r -t go 3;Count reverse from 3 and print 'go'")
+
+sfextra="No copyright at all."
+
+# Include sf, this could be replaced with a long oneliner
+source "$(dirname $0)/../sf"
+
+# ----------------------
+# Actual script
+# ----------------------
+
+if [ "$N" -ge 11 ]; then                    # Use parsed positional argument
+    sferr "I can only count to/from 10"     # Throw an error and exit
+fi
+
+counter="$N"                                # Use parsed positional argument
+echo -n "$sftbf"                            # Print everyting from here bold
+while [ "$counter" -ge 1 ]; do
+    if [ "$reverse" == true ]; then         # Use parsed flag
+        echo "  $counter"
+    else
+        echo "  $(expr $N - $counter + 1)"  # Use parsed positional argument
+    fi
+    counter=$(expr $counter - 1)
+    sleep 1
+done
+echo -n "$sftrs"                            # Reset text formatting
+echo "$text"                                # Use parsed argument
