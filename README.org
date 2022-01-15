@@ -43,13 +43,13 @@
     This is the list of variables which can be set *before* including /sf/.
     Everything is optional.
 
-    | Name         | Description                                                                                         | Example                                |
-    |--------------+-----------------------------------------------------------------------------------------------------+----------------------------------------|
-    | =sfdesc=     | Description of the script                                                                           | ~ sfdesc="This script does nothing." ~ |
-    | =sfargs=     | Array for declaration of arguments, positional arguments and flags. Look below for more information | See [[#sfargs][below]]                              |
-    | =sfparr=     | Flag which indicates if the last declared positional argument should be treated as array            | ~ sfparr=true ~                        |
-    | =sfexamples= | Array for declaration of examples for the usage output. Look below for more information             | See also [[#sfexamples][below]]                         |
-    | =sfextra=    | Additional usage output                                                                             | ~ sfextra="No copyright." ~            |
+    | Name         | Description                                                                                         | Example                              |
+    |--------------+-----------------------------------------------------------------------------------------------------+--------------------------------------|
+    | =sfdesc=     | Description of the script                                                                           | /sfdesc="This script does nothing."/ |
+    | =sfargs=     | Array for declaration of arguments, positional arguments and flags. Look below for more information | See [[#sfargs][below]]                            |
+    | =sfparr=     | Flag which indicates if the last declared positional argument should be treated as array            | /sfparr=true/                        |
+    | =sfexamples= | Array for declaration of examples for the usage output. Look below for more information             | See also [[#sfexamples][below]]                       |
+    | =sfextra=    | Additional usage output                                                                             | /sfextra="No copyright."/            |
 
     Examples which show the usage of all variables can be found [[#examples][below]] and in the =examples= directory.
 
