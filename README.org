@@ -184,7 +184,7 @@
 
 *** Count
 
-    This example script counts from/to a number:
+    This example script counts from/to a number and shows the general usage of /sf/-variables:
 
     #+begin_src sh
       #!/usr/bin/env bash
@@ -307,4 +307,52 @@
       OPTIONS
         -h, --help     Show this help message
         -v, --verbose  Enable verbose output
+    #+end_example
+
+*** Greet
+
+    This example greets a user and asks for the age.
+    It shows the usage of input functions:
+
+    #+begin_src sh
+      #!/usr/bin/env bash
+
+      # ----------------------
+      # sf -- script framework
+      # ----------------------
+
+      # Declare sf variables
+      sfdesc="Greet a person."
+
+      # Include sf, this could be replaced with a long oneliner
+      source "$(dirname $0)/sf"
+
+      # ----------------------
+      # Actual script
+      # ----------------------
+
+      sfget "Enter your name"                                      # Get input
+      echo "Hello ${sfin}!"                                        # Use input
+
+      sfask "Do you want to tell me your age"                      # Ask for YES/no
+      if [ "$sfin" == true ]; then                                 # Use answer
+          sfget "Enter your Age"                                   # Get input
+          sfask "Is ${sftbf}${sfin}${sftrs} really your age" "no"  # Use input and ask for yes/NO
+          if [ "$sfin" == true ]; then                             # Use answer
+              echo "Great!"
+          else
+              echo "I knew it!"
+          fi
+      fi
+    #+end_src
+
+    The produced usage:
+
+    #+begin_example
+      Usage: greet [OPTIONS]
+
+      Greet a person.
+
+      OPTIONS
+        -h, --help  Show this help message
     #+end_example
