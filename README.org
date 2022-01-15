@@ -78,19 +78,25 @@
      This is also an array of strings.
      Examples are of the form =<command>;<description>= and can be added to /sf/ like this:
 
-     : sfexamples+=("count 8;Count to eight")
-
+     #+begin_src sh
+       sfexamples+=("count 8;Count to eight")
+     #+end_src
+       
 *** 2. Include /sf/
 
     There are three methods of including /sf/:
 
     1. Grab the /sf/ file from this repo, place it next to your script and source it:
-       : source "$(dirname $0)/sf"
+       #+begin_src sh
+         source "$(dirname $0)/sf"
+       #+end_src
 
     2. Copy and paste the *oneliner* from the top of this README
 
     3. Source /sf/ from the web with =curl=:
-       : source <(curl -s https://raw.githubusercontent.com/Deleh/sf/master/sf)
+       #+begin_src sh
+         source <(curl -s https://raw.githubusercontent.com/Deleh/sf/master/sf)
+       #+end_src
        *Note* that this adds an online dependency to your script and if /sf/ changes your script may break.
        This method should only be used for testing purposes.
 
@@ -103,7 +109,9 @@
     The values are stored in variables with the name =$<name>=.
     If you declared for example a flag like this:
 
-    : sfargs+=("verbose;v;Enable verbose output")
+    #+begin_src sh
+      sfargs+=("verbose;v;Enable verbose output")
+    #+end_src
 
     Then the variable =$verbose= exists with a value of either =false= or =true=.
 
