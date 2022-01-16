@@ -59,11 +59,14 @@ function _sferr {
 # Declare variables for parsing
 OLDIFS=$IFS
 IFS=";"
-_sfphead=""
-_sfpdesc=""
-_sfodesc="  -h, --help;Show this help message\n"
-_sfexamples=""
 _sfpargs=()
+_sfpheads=()
+_sfpoffset=0
+_sfptails=()
+_sfpusage=""
+_sfoheads=()
+_sfooffset=0
+_sfotails=()
 declare -A _sfflags
 declare -A _sfargs
 
@@ -74,7 +77,7 @@ for a in "${sfargs[@]}"; do
     _sfsubst=${a//";"}
     _sfcount="$(((${#a} - ${#_sfsubst})))"
 
-    if [ $_sfcount -eq 1 ]; then
+    if [ "$_sfcount" -eq 1 ]; then
 
         # Read positional argument declaration
         read -r -a _sfparsearr <<< "${a}"
@@ -83,12 +86,15 @@ for a in "${sfargs[@]}"; do
         [[ " ${_sfpargs[*]} " =~ " ${_sfparsearr[0]} " ]] && _sferr "'${_sfparsearr[0]}' is already set: $a"
         _sfpargs+=("${_sfparsearr[0]}")
 
-        # Set usage header and description
-        _sfphead="$_sfphead ${_sfparsearr[0]}"
-        _sfpdesc="$_sfpdesc  ${_sfparsearr[0]};${_sfparsearr[1]}\n"
+        # Set usage header and append description arrays
+        _sfpusage="$_sfpusage ${_sfparsearr[0]}"
+        _sfphead="${_sfparsearr[0]}"
+        [ "${#_sfphead}" -gt "${_sfpoffset}" ] && _sfpoffset="${#_sfphead}"
+        _sfpheads+=("$_sfphead")
+        _sfptails+=("${_sfparsearr[1]}")
 
     # Flags
-    elif [ $_sfcount -eq 2 ]; then
+    elif [ "$_sfcount" -eq 2 ]; then
 
         # Read flag declaration
         read -r -a _sfparsearr <<< "${a}"
@@ -100,13 +106,16 @@ for a in "${sfargs[@]}"; do
         _sfflags["-${_sfparsearr[1]}"]="${_sfparsearr[0]}"
 
         # Set default value
-        declare "${_sfparsearr[0]}"=false
+        declare "${_sfparsearr[0]//-/_}"=false
 
-        # Set description
-        _sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]};${_sfparsearr[2]}\n"
+        # Append description arrays
+        _sfohead="-${_sfparsearr[1]}, --${_sfparsearr[0]}"
+        [ "${#_sfohead}" -gt "${_sfooffset}" ] && _sfooffset="${#_sfohead}"
+        _sfoheads+=("$_sfohead")
+        _sfotails+=("${_sfparsearr[2]}")
 
     # Arguments
-    elif [ $_sfcount -eq 4 ]; then
+    elif [ "$_sfcount" -eq 4 ]; then
 
         # Read argument declaration
         read -r -a _sfparsearr <<< "${a}"
@@ -118,35 +127,85 @@ for a in "${sfargs[@]}"; do
         _sfargs["-${_sfparsearr[1]}"]="${_sfparsearr[0]}"
 
         # Set default value
-        declare "${_sfparsearr[0]}"="${_sfparsearr[3]}"
+        declare "${_sfparsearr[0]//-/_}"="${_sfparsearr[3]}"
 
-        # Set description
-        _sfodesc="$_sfodesc  -${_sfparsearr[1]}, --${_sfparsearr[0]} ${_sfparsearr[2]};${_sfparsearr[4]} (default: ${_sfparsearr[3]})\n"
+        # Append description arrays
+        _sfohead="-${_sfparsearr[1]}, --${_sfparsearr[0]} ${_sfparsearr[2]}"
+        [ "${#_sfohead}" -gt "${_sfooffset}" ] && _sfooffset="${#_sfohead}"
+        _sfoheads+=("$_sfohead")
+        _sfotails+=("${_sfparsearr[4]} (default: ${_sfparsearr[3]})")
 
     else
         _sferr "Wrong argument declaration: $a"
     fi
 done
 
+# Set _sfwidth to current terminal size
+_sfwidth=$(stty size | cut -d ' ' -f 2)
+
+# Create positional argument description with correct line breaks
+_sfpoffset=$(( "_sfpoffset" + 3 ))
+_sfpdesc=""
+for i in "${!_sfptails[@]}"; do
+    _sfptail="${_sfptails[$i]}"
+    if [ $(( "${#_sfptail}" + "$_sfpoffset" )) -gt "$_sfwidth" ]; then
+        _sfptail=$(echo "$_sfptail" | fold -s -w "$(( _sfwidth - _sfpoffset ))")
+        _sfptail="${_sfptail//$' \n'/$'\n;'}"
+    fi
+    _sfpdesc="${_sfpdesc}  ${_sfpheads[$i]};${_sfptail}\n"
+done
+
+# Create option description with correct line breaks
+_sfooffset=$(( "_sfooffset" + 3 ))
+_sfodesc="  -h, --help;Show this help message\n"
+for i in "${!_sfotails[@]}"; do
+    _sfotail="${_sfotails[$i]}"
+    if [ $(( "${#_sfotail}" + "$_sfooffset" )) -gt "$_sfwidth" ]; then
+        _sfotail=$(echo "$_sfotail" | fold -s -w "$(( _sfwidth - _sfooffset ))")
+        _sfotail="${_sfotail//$' \n'/$'\n;'}"
+    fi
+    _sfodesc="${_sfodesc}  ${_sfoheads[$i]};${_sfotail}\n"
+done
+
 # Check if at least one positional argument is set if 'sfparr' is used
 [ "$sfparr" == true ] && [ "${#_sfpargs[@]}" == 0 ] && _sferr "At least one positional argument must be used with 'sfparr'"
 
 # Parse examples
+_sfeheads=()
+_sfetails=()
+_sfeoffset=0
 for e in "${sfexamples[@]}"; do
 
     # Get amount of ;
     _sfsubst=${e//";"}
     _sfcount="$(((${#e} - ${#_sfsubst})))"
 
-    if [ $_sfcount -eq 1 ]; then
+    if [ "$_sfcount" -eq 1 ]; then
 
         # Read example
         read -r -a _sfparsearr <<< "${e}"
 
-        _sfexamples="$_sfexamples  ${_sfparsearr[0]};${_sfparsearr[1]}\n"
+        # Append example arrays
+        _sfehead="${_sfparsearr[0]}"
+        [ "${#_sfehead}" -gt "${_sfeoffset}" ] && _sfeoffset="${#_sfehead}"
+        _sfeheads+=("$_sfehead")
+        _sfetails+=("${_sfparsearr[1]}")
+
     else
         _sferr "Wrong example declaration: $e"
     fi
+done
+
+# Create examples description with correct line breaks
+_sfeoffset=$(( "_sfeoffset" + 3 ))
+_sfexamples=""
+for i in "${!_sfetails[@]}"; do
+    _sfetail="${_sfetails[$i]}"
+    if [ $(( "${#_sfetail}" + "$_sfeoffset" )) -gt "$_sfwidth" ]; then
+        _sfetail=$(echo "$_sfetail" | fold -s -w "$(( _sfwidth - _sfeoffset ))")
+        _sfetail="${_sfetail//$' \n'/$'\n;'}"
+    fi
+    _sfexamples="${_sfexamples}  ${_sfeheads[$i]};${_sfetail}\n"
 done
 
 IFS=$OLDIFS
@@ -154,21 +213,21 @@ IFS=$OLDIFS
 # Usage function
 function _sfusage {
     echo -n "Usage: $(basename "$0") [OPTIONS]"
-    echo -ne "$_sfphead"
+    echo -ne "$_sfpusage"
     [ "$sfparr" == true ] && echo -n " ..."
     echo
     [ -n "${sfdesc}" ] && echo -e "\n$sfdesc"
     if [ "$_sfpdesc" != "" ]; then
         echo -e "\nPOSITIONAL ARGUMENTS"
-        echo -e "$_sfpdesc" | column -c 80 -s ";" -t -W 2
+        echo -e "$_sfpdesc" | column -s ";" -t -W 2
     fi
     if [ "$_sfodesc" != "" ]; then
         echo -e "\nOPTIONS"
-        echo -e "$_sfodesc" | column -c 80 -s ";" -t -W 2
+        echo -e "$_sfodesc" | column -s ";" -t -W 2
     fi
     if [ "$_sfexamples" != "" ]; then
         echo -e "\nEXAMPLES"
-        echo -e "$_sfexamples" | column -c 80 -s ";" -t -W 2
+        echo -e "$_sfexamples" | column -s ";" -t -W 2
     fi
     if [ -n "${sfextra}" ]; then
         echo -e "\n$sfextra"
@@ -187,14 +246,14 @@ while (( "$#" )); do
 
     # Check if flag
     if [ -n "${_sfflags["$1"]}" ]; then
-        declare "${_sfflags["$1"]}"=true
+        declare "${_sfflags["$1"]//-/_}"=true
 
     # Check if argument
     elif [ -n "${_sfargs["$1"]}" ]; then
 
         # Check if argument has value
         if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
-            declare "${_sfargs["$1"]}"="$2"
+            declare "${_sfargs["$1"]//-/_}"="$2"
             shift
         else
             sferr "Argument for '$1' missing"
@@ -204,12 +263,12 @@ while (( "$#" )); do
     else
         # Check if arg starts with -
         if [ "${1:0:1}" == "-" ]; then
-            sferr "Unsupported argument: $1"
+            sferr "Unsupported argument/flag: $1"
         else
             # Set positional argument
             if [ "${#_sfpargs[@]}" != 0 ]; then
-                declare "${_sfpargs[0]}"="$1"
-                [ "$sfparr" == true ] && _sfplast="${_sfpargs[0]}" && _sfparr=("$1")
+                declare "${_sfpargs[0]//-/_}"="$1"
+                [ "$sfparr" == true ] && _sfplast="${_sfpargs[0]//-/_}" && _sfparr=("$1")
                 _sfpargs=("${_sfpargs[@]:1}")
             elif [ "$sfparr" == true ]; then
                 _sfparr+=("$1")
@@ -222,10 +281,10 @@ while (( "$#" )); do
 done
 
 # Parse additional arguments if 'sfparr' is set
-[ "$sfparr" == true ] && [ "${#_sfparr[@]}" -ge 1 ] && read -r -a "${_sfplast?}" <<< "${_sfparr[@]}"
+[ "$sfparr" == true ] && [ "${#_sfparr[@]}" -gt 0 ] && read -r -a "${_sfplast?}" <<< "${_sfparr[@]}"
 
 # Check if positional arguments left
-if [ "$sfparr" != true ] && [ "${#_sfpargs[@]}" -ge 1 ]; then
+if [ "${#_sfpargs[@]}" -gt 0 ]; then
     for p in "${_sfpargs[@]}"; do
         sferr "Positional argument '$p' missing" 0
     done
@@ -233,4 +292,4 @@ if [ "$sfparr" != true ] && [ "${#_sfpargs[@]}" -ge 1 ]; then
 fi
 
 # Unset all internal variables and functions
-unset a e _sfargs _sferr _sfexamples _sfflags _sfodesc _sfpargs _sfparr _sfpdesc _sfphead _sfplast _sfusage
+unset a e i _sfargs _sfehead _sfeheads _sfeoffset _sferr _sfetails _sfexamples _sfflags _sfodesc _sfohead _sfoheads _sfooffset _sfotails _sfpargs _sfparr _sfpdesc _sfphead _sfpheads _sfplast _sfpoffset _sfptails _sfpusage _sfusage _sfwidth
