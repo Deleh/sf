@@ -23,13 +23,13 @@ source "$(dirname $0)/../sf"
 # Actual script
 # ----------------------
 
-if [ "$N" -ge 11 ]; then                    # Use parsed positional argument
+if [ "$N" -gt 10 ]; then                    # Use parsed positional argument
     sferr "I can only count to/from 10"     # Throw an error and exit
 fi
 
 counter="$N"                                # Use parsed positional argument
 echo -n "$sftbf"                            # Print everyting from here bold
-while [ "$counter" -ge 1 ]; do
+while [ "$counter" -gt 0 ]; do
     if [ "$reverse" == true ]; then         # Use parsed flag
         echo "  $counter"
     else
