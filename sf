@@ -133,7 +133,7 @@ for a in "${sfargs[@]}"; do
         _sfohead="-${_sfparsearr[1]}, --${_sfparsearr[0]} ${_sfparsearr[2]}"
         [ "${#_sfohead}" -gt "${_sfooffset}" ] && _sfooffset="${#_sfohead}"
         _sfoheads+=("$_sfohead")
-        _sfotails+=("${_sfparsearr[4]} (default: ${_sfparsearr[3]})")
+        [ "${_sfparsearr[3]}" != "" ] && _sfotails+=("${_sfparsearr[4]} (default: ${_sfparsearr[3]})") || _sfotails+=("${_sfparsearr[4]}")
 
     else
         _sferr "Wrong argument declaration: $a"
