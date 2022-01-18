@@ -194,6 +194,7 @@ for i in "${!_sfptails[@]}"; do
 done
 
 # Create option description with correct line breaks
+_sfodesc=""
 for i in "${!_sfotails[@]}"; do
     _sfotail="${_sfotails[$i]}"
     if [ $(( "${#_sfotail}" + "$_sfooffset" )) -gt "$_sfwidth" ]; then
