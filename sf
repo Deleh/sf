@@ -71,6 +71,7 @@ declare -A _sfflags
 declare -A _sfargs
 
 # Parse sf arguments
+sfargs=("help;h;Show this help message" "${sfargs[@]}")
 for a in "${sfargs[@]}"; do
 
     # Get amount of ;
@@ -140,36 +141,6 @@ for a in "${sfargs[@]}"; do
     fi
 done
 
-# Set _sfwidth to current terminal size
-_sfwidth=$(stty size | cut -d ' ' -f 2)
-
-# Create positional argument description with correct line breaks
-_sfpoffset=$(( "_sfpoffset" + 3 ))
-_sfpdesc=""
-for i in "${!_sfptails[@]}"; do
-    _sfptail="${_sfptails[$i]}"
-    if [ $(( "${#_sfptail}" + "$_sfpoffset" )) -gt "$_sfwidth" ]; then
-        _sfptail=$(echo "$_sfptail" | fold -s -w "$(( _sfwidth - _sfpoffset ))")
-        _sfptail="${_sfptail//$' \n'/$'\n;'}"
-    fi
-    _sfpdesc="${_sfpdesc}  ${_sfpheads[$i]};${_sfptail}\n"
-done
-
-# Create option description with correct line breaks
-_sfooffset=$(( "_sfooffset" + 3 ))
-_sfodesc="  -h, --help;Show this help message\n"
-for i in "${!_sfotails[@]}"; do
-    _sfotail="${_sfotails[$i]}"
-    if [ $(( "${#_sfotail}" + "$_sfooffset" )) -gt "$_sfwidth" ]; then
-        _sfotail=$(echo "$_sfotail" | fold -s -w "$(( _sfwidth - _sfooffset ))")
-        _sfotail="${_sfotail//$' \n'/$'\n;'}"
-    fi
-    _sfodesc="${_sfodesc}  ${_sfoheads[$i]};${_sfotail}\n"
-done
-
-# Check if at least one positional argument is set if 'sfparr' is used
-[ "$sfparr" == true ] && [ "${#_sfpargs[@]}" == 0 ] && _sferr "At least one positional argument must be used with 'sfparr'"
-
 # Parse examples
 _sfeheads=()
 _sfetails=()
@@ -196,19 +167,56 @@ for e in "${sfexamples[@]}"; do
     fi
 done
 
-# Create examples description with correct line breaks
+IFS=$OLDIFS
+
+# Check if at least one positional argument is set if 'sfparr' is used
+[ "$sfparr" == true ] && [ "${#_sfpargs[@]}" == 0 ] && _sferr "At least one positional argument must be used with 'sfparr'"
+
+# Correct offsets
+_sfpoffset=$(( "_sfpoffset" + 3 ))
+_sfooffset=$(( "_sfooffset" + 3 ))
 _sfeoffset=$(( "_sfeoffset" + 3 ))
+
+# Set _sfwidth to current terminal width
+_sfwidth=$(stty size | cut -d ' ' -f 2)
+
+# Create positional argument description with correct line breaks
+_sfpdesc=""
+for i in "${!_sfptails[@]}"; do
+    _sfptail="${_sfptails[$i]}"
+    if [ $(( "${#_sfptail}" + "$_sfpoffset" )) -gt "$_sfwidth" ]; then
+        _sftmpwidth="$(( _sfwidth - _sfpoffset ))"
+        _sftmpwidth=$(echo -e "${_sftmpwidth}\n1" | sort -nr | head -n 1)
+        _sfptail=$(echo "$_sfptail" | fold -s -w "$_sftmpwidth")
+        _sfptail="${_sfptail//$' \n'/$'\n;'}"
+    fi
+    _sfpdesc="${_sfpdesc}  ${_sfpheads[$i]};${_sfptail}\n"
+done
+
+# Create option description with correct line breaks
+for i in "${!_sfotails[@]}"; do
+    _sfotail="${_sfotails[$i]}"
+    if [ $(( "${#_sfotail}" + "$_sfooffset" )) -gt "$_sfwidth" ]; then
+        _sftmpwidth="$(( _sfwidth - _sfooffset ))"
+        _sftmpwidth=$(echo -e "${_sftmpwidth}\n1" | sort -nr | head -n 1)
+        _sfotail=$(echo "$_sfotail" | fold -s -w "$_sftmpwidth")
+        _sfotail="${_sfotail//$' \n'/$'\n;'}"
+    fi
+    _sfodesc="${_sfodesc}  ${_sfoheads[$i]};${_sfotail}\n"
+done
+
+# Create examples description with correct line breaks
 _sfexamples=""
 for i in "${!_sfetails[@]}"; do
     _sfetail="${_sfetails[$i]}"
     if [ $(( "${#_sfetail}" + "$_sfeoffset" )) -gt "$_sfwidth" ]; then
-        _sfetail=$(echo "$_sfetail" | fold -s -w "$(( _sfwidth - _sfeoffset ))")
+        _sftmpwidth="$(( _sfwidth - _sfeoffset ))"
+        _sftmpwidth=$(echo -e "${_sftmpwidth}\n1" | sort -nr | head -n 1)
+        _sfetail=$(echo "$_sfetail" | fold -s -w "$_sftmpwidth")
         _sfetail="${_sfetail//$' \n'/$'\n;'}"
     fi
     _sfexamples="${_sfexamples}  ${_sfeheads[$i]};${_sfetail}\n"
 done
-
-IFS=$OLDIFS
 
 # Usage function
 function _sfusage {
@@ -216,7 +224,7 @@ function _sfusage {
     echo -ne "$_sfpusage"
     [ "$sfparr" == true ] && echo -n " ..."
     echo
-    [ -n "${sfdesc}" ] && echo -e "\n$sfdesc"
+    [ -n "${sfdesc}" ] && echo -e "\n$sfdesc" | fold -s -w "$_sfwidth"
     if [ "$_sfpdesc" != "" ]; then
         echo -e "\nPOSITIONAL ARGUMENTS"
         echo -e "$_sfpdesc" | column -s ";" -t -W 2
@@ -292,4 +300,4 @@ if [ "${#_sfpargs[@]}" -gt 0 ]; then
 fi
 
 # Unset all internal variables and functions
-unset a e i _sfargs _sfehead _sfeheads _sfeoffset _sferr _sfetails _sfexamples _sfflags _sfodesc _sfohead _sfoheads _sfooffset _sfotails _sfpargs _sfparr _sfpdesc _sfphead _sfpheads _sfplast _sfpoffset _sfptails _sfpusage _sfusage _sfwidth
+unset a e i _sfargs _sfehead _sfeheads _sfeoffset _sferr _sfetails _sfexamples _sfflags _sfodesc _sfohead _sfoheads _sfooffset _sfotails _sfpargs _sfparr _sfpdesc _sfphead _sfpheads _sfplast _sfpoffset _sfptails _sfpusage _sftmpwidth _sfusage _sfwidth
