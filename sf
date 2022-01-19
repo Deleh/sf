@@ -71,7 +71,7 @@ declare -A _sfflags
 declare -A _sfargs
 
 # Parse sf arguments
-sfargs=("help;h;Show this help message" "${sfargs[@]}")
+sfargs=("${sfargs[@]}" "help;h;Show this help message and exit")
 for a in "${sfargs[@]}"; do
 
     # Get amount of ;
@@ -184,7 +184,7 @@ _sfwidth=$(stty size | cut -d ' ' -f 2)
 _sfpdesc=""
 for i in "${!_sfptails[@]}"; do
     _sfptail="${_sfptails[$i]}"
-    if [ $(( "${#_sfptail}" + "$_sfpoffset" )) -gt "$_sfwidth" ]; then
+    if [ "$(( ${#_sfptail} + _sfpoffset ))" -gt "$_sfwidth" ]; then
         _sftmpwidth="$(( _sfwidth - _sfpoffset ))"
         _sftmpwidth=$(echo -e "${_sftmpwidth}\n1" | sort -nr | head -n 1)
         _sfptail=$(echo "$_sfptail" | fold -s -w "$_sftmpwidth")
@@ -197,7 +197,7 @@ done
 _sfodesc=""
 for i in "${!_sfotails[@]}"; do
     _sfotail="${_sfotails[$i]}"
-    if [ $(( "${#_sfotail}" + "$_sfooffset" )) -gt "$_sfwidth" ]; then
+    if [ "$(( ${#_sfotail} + _sfooffset ))" -gt "$_sfwidth" ]; then
         _sftmpwidth="$(( _sfwidth - _sfooffset ))"
         _sftmpwidth=$(echo -e "${_sftmpwidth}\n1" | sort -nr | head -n 1)
         _sfotail=$(echo "$_sfotail" | fold -s -w "$_sftmpwidth")
@@ -210,7 +210,7 @@ done
 _sfexamples=""
 for i in "${!_sfetails[@]}"; do
     _sfetail="${_sfetails[$i]}"
-    if [ $(( "${#_sfetail}" + "$_sfeoffset" )) -gt "$_sfwidth" ]; then
+    if [ "$(( ${#_sfetail} + _sfeoffset ))" -gt "$_sfwidth" ]; then
         _sftmpwidth="$(( _sfwidth - _sfeoffset ))"
         _sftmpwidth=$(echo -e "${_sftmpwidth}\n1" | sort -nr | head -n 1)
         _sfetail=$(echo "$_sfetail" | fold -s -w "$_sftmpwidth")
@@ -249,6 +249,15 @@ for a in "$@"; do
     # Check if help flag ist set
     [ "$a" == "-h" ] || [ "$a" == "--help" ] && _sfusage
 done
+
+# Check if dependencies are available
+for d in "${sfdeps[@]}"; do
+    if ! command -v "$d" &> /dev/null; then
+        sferr "${sftbf}${d}${sftrs} not fund" 0
+        _sfdeperr=true
+    fi
+done
+[ "$_sfdeperr" == true ] && exit 1
 
 # Parse arguments
 while (( "$#" )); do
@@ -301,4 +310,4 @@ if [ "${#_sfpargs[@]}" -gt 0 ]; then
 fi
 
 # Unset all internal variables and functions
-unset a e i _sfargs _sfehead _sfeheads _sfeoffset _sferr _sfetails _sfexamples _sfflags _sfodesc _sfohead _sfoheads _sfooffset _sfotails _sfpargs _sfparr _sfpdesc _sfphead _sfpheads _sfplast _sfpoffset _sfptails _sfpusage _sftmpwidth _sfusage _sfwidth
+unset a d e i OLDIFS _sfargs _sfehead _sfeheads _sfeoffset _sferr _sfetails _sfexamples _sfflags _sfodesc _sfohead _sfoheads _sfooffset _sfotails _sfpargs _sfparr _sfpdesc _sfphead _sfpheads _sfplast _sfpoffset _sfptails _sfpusage _sftmpwidth _sfusage _sfwidth
