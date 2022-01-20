@@ -253,7 +253,7 @@ done
 # Check if dependencies are available
 for d in "${sfdeps[@]}"; do
     if ! command -v "$d" &> /dev/null; then
-        sferr "${sftbf}${d}${sftrs} not fund" 0
+        sferr "Command ${sftbf}${d}${sftrs} not found" 0
         _sfdeperr=true
     fi
 done
