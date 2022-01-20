@@ -398,3 +398,48 @@
       Is 75 really your age? [y/N] y
       Great!
     #+end_example
+
+*** Throw
+
+    This example shows the usage of =sfdeps=:
+
+    #+begin_src sh
+      #!/usr/bin/env bash
+
+      # ----------------------
+      # sf -- script framework
+      # ----------------------
+
+      # Declare sf variables
+      sfdesc="A script that shows the usage of 'sfdeps'. It should always throw an error."
+
+      sfdeps=("source" "nonexistent" "alsononexistent" "echo")
+
+      # Include sf, this could be replaced with a long oneliner
+      source "$(dirname $0)/sf"
+
+      # ----------------------
+      # Actual script
+      # ----------------------
+
+      echo "If you see this, the commands 'source', 'nonexistent', 'alsononexistent' and 'echo' are available."
+    #+end_src
+
+    The usage output:
+
+    #+begin_example
+      Usage: throw [OPTIONS]
+
+      A script that shows the usage of 'sfdeps'. It should always throw an error.
+
+      OPTIONS
+        -h, --help  Show this help message and exit
+    #+end_example
+
+    And the execution:
+
+    #+begin_example
+      $ ./throw
+      ERROR Command nonexistent not found
+      ERROR Command alsononexistent not found
+    #+end_example
