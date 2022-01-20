@@ -234,9 +234,9 @@
         N  Number to count
 
       OPTIONS
-        -h, --help       Show this help message
         -r, --reverse    Count reverse
         -t, --text TEXT  Print TEXT when finished counting (default: done)
+        -h, --help       Show this help message and exit
 
       EXAMPLES
         count 8           Count to eight
@@ -307,8 +307,8 @@
         NUMBERS  Numbers which will be added
 
       OPTIONS
-        -h, --help     Show this help message
         -v, --verbose  Enable verbose output
+        -h, --help     Show this help message and exit
     #+end_example
 
     An example call looks like this:
@@ -379,12 +379,12 @@
       Greet a person.
 
       OPTIONS
-        -h, --help                 Show this help message
         -p, --pretty-useless-flag  This is a pretty useless flag which is only used to
                                    show correct linebreaks of the usage. Change your
                                    terminal size and let this print again to see how
                                    the output adapts to your window
         -l, --ask-for-lastname     Ask for lastname
+        -h, --help                 Show this help message and exit
     #+end_example
 
     An example call looks like this:
