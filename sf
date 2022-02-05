@@ -137,7 +137,7 @@ for a in "${sfargs[@]}"; do
         [ "${_sfparsearr[3]}" != "" ] && _sfotails+=("${_sfparsearr[4]} (default: ${_sfparsearr[3]})") || _sfotails+=("${_sfparsearr[4]}")
 
     else
-        _sferr "Wrong argument declaration: $a"
+        _sferr "Wrong argument declaration: ${sftbf}${a}${sftrs}"
     fi
 done
 
@@ -163,14 +163,14 @@ for e in "${sfexamples[@]}"; do
         _sfetails+=("${_sfparsearr[1]}")
 
     else
-        _sferr "Wrong example declaration: $e"
+        _sferr "Wrong example declaration: ${sftbf}${e}${sftrs}"
     fi
 done
 
 IFS=$OLDIFS
 
 # Check if at least one positional argument is set if 'sfparr' is used
-[ "$sfparr" == true ] && [ "${#_sfpargs[@]}" == 0 ] && _sferr "At least one positional argument must be used with 'sfparr'"
+[ "$sfparr" == true ] && [ "${#_sfpargs[@]}" == 0 ] && _sferr "At least one positional argument must be used with ${sftbf}sfparr${sftrs}"
 
 # Correct offsets
 _sfpoffset=$(( "_sfpoffset" + 3 ))
@@ -274,14 +274,14 @@ while (( "$#" )); do
             declare "${_sfargs["$1"]//-/_}"="$2"
             shift
         else
-            sferr "Argument for '$1' missing"
+            sferr "Argument for ${sftbf}${1}${sftrs} missing"
         fi
 
     # Handle positional arguments and wrong arguments/flags
     else
         # Check if arg starts with -
         if [ "${1:0:1}" == "-" ]; then
-            sferr "Unsupported argument/flag: $1"
+            sferr "Unsupported argument/flag: ${sftbf}${1}${sftrs}"
         else
             # Set positional argument
             if [ "${#_sfpargs[@]}" != 0 ]; then
@@ -304,7 +304,7 @@ done
 # Check if positional arguments left
 if [ "${#_sfpargs[@]}" -gt 0 ]; then
     for p in "${_sfpargs[@]}"; do
-        sferr "Positional argument '$p' missing" 0
+        sferr "Positional argument ${sftbf}${p}${sftrs} missing" 0
     done
     exit 1
 fi
