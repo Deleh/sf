@@ -84,7 +84,7 @@ for a in "${sfargs[@]}"; do
         read -r -a _sfparsearr <<< "${a}"
 
         # Add to positional argument arry
-        [[ " ${_sfpargs[*]} " =~ " ${_sfparsearr[0]} " ]] && _sferr "'${_sfparsearr[0]}' is already set: $a"
+        [[ " ${_sfpargs[*]} " =~ " ${_sfparsearr[0]} " ]] && _sferr "${sftbf}${_sfparsearr[0]}${sftrs} is already set: ${sftbf}${a}${sftrs}"
         _sfpargs+=("${_sfparsearr[0]}")
 
         # Set usage header and append description arrays
@@ -101,9 +101,9 @@ for a in "${sfargs[@]}"; do
         read -r -a _sfparsearr <<< "${a}"
 
         # Set mappings
-        [ -n "${_sfflags["--${_sfparsearr[0]}"]}" ] && _sferr "'${_sfparsearr[0]}' is already set: $a"
+        [ -n "${_sfflags["--${_sfparsearr[0]}"]}" ] && _sferr "${sftbf}${_sfparsearr[0]}${sftrs} is already set: ${sftbf}${a}${sftrs}"
         _sfflags["--${_sfparsearr[0]}"]="${_sfparsearr[0]}"
-        [ -n "${_sfflags["-${_sfparsearr[1]}"]}" ] && _sferr "'${_sfparsearr[1]}' is already set: $a"
+        [ -n "${_sfflags["-${_sfparsearr[1]}"]}" ] && _sferr "${sftbf}${_sfparsearr[1]}${sftrs} is already set: ${sftbf}${a}${sftrs}"
         _sfflags["-${_sfparsearr[1]}"]="${_sfparsearr[0]}"
 
         # Set default value
@@ -122,9 +122,9 @@ for a in "${sfargs[@]}"; do
         read -r -a _sfparsearr <<< "${a}"
 
         # Set mappings
-        [ -n "${_sfargs["--${_sfparsearr[0]}"]}" ] && _sferr "'${_sfparsearr[0]}' is already set: $a"
+        [ -n "${_sfargs["--${_sfparsearr[0]}"]}" ] && _sferr "${sftbf}${_sfparsearr[0]}${sftrs} is already set: ${sftbf}${a}${sftrs}"
         _sfargs["--${_sfparsearr[0]}"]="${_sfparsearr[0]}"
-        [ -n "${_sfargs["-${_sfparsearr[1]}"]}" ] && _sferr "'${_sfparsearr[1]}' is already set: $a"
+        [ -n "${_sfargs["-${_sfparsearr[1]}"]}" ] && _sferr "${sftbf}${_sfparsearr[1]}${sftrs} is already set: ${sftbf}${a}${sftrs}"
         _sfargs["-${_sfparsearr[1]}"]="${_sfparsearr[0]}"
 
         # Set default value
