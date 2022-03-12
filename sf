@@ -74,10 +74,11 @@ declare -A _sfargs
 sfargs=("${sfargs[@]}" "help;h;Show this help message and exit")
 for a in "${sfargs[@]}"; do
 
-    # Get amount of ;
+    # Get amount of semicolons
     _sfsubst=${a//";"}
     _sfcount="$(((${#a} - ${#_sfsubst})))"
 
+    # Positional arguments
     if [ "$_sfcount" -eq 1 ]; then
 
         # Read positional argument declaration
