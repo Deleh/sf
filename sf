@@ -20,6 +20,16 @@ sftm=$'\e[35m'
 sftc=$'\e[36m'
 sftw=$'\e[97m'
 
+# Public output functions
+function sferr {
+    echo "${sftbf}${sftr}ERROR${sftrs} $1"
+    [ -z "$2" ] && exit 1
+}
+
+function sfwarn {
+    echo "${sftbf}${sfty}WARNING${sftrs} $1"
+}
+
 # Public input functions
 function sfask {
     if [ -n "$2" ]; then
@@ -232,22 +242,13 @@ function _sfusage {
     if [ -n "${sfextra}" ]; then
         echo -e "\n$sfextra"
     fi
-}
-
-# Public output functions
-function sferr {
-    echo "${sftbf}${sftr}ERROR${sftrs} $1"
-    [ -z "$2" ] && _sfusage && exit 1
-}
-
-function sfwarn {
-    echo "${sftbf}${sfty}WARNING${sftrs} $1"
+    exit 0
 }
 
 # Check for help flag
 for a in "$@"; do
     # Check if help flag ist set
-    [ "$a" == "-h" ] || [ "$a" == "--help" ] && _sfusage && exit 0
+    [ "$a" == "-h" ] || [ "$a" == "--help" ] && _sfusage
 done
 
 # Check if dependencies are available
@@ -306,7 +307,6 @@ if [ "${#_sfpargs[@]}" -gt 0 ]; then
     for p in "${_sfpargs[@]}"; do
         sferr "Positional argument ${sftbf}${p}${sftrs} missing" 0
     done
-    _sfusage
     exit 1
 fi
 
