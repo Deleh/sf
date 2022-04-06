@@ -229,15 +229,15 @@ function _sfusage {
     [ -n "${sfdesc}" ] && echo -e "\n$sfdesc" | fold -s -w "$_sfwidth"
     if [ "$_sfpdesc" != "" ]; then
         echo -e "\nPOSITIONAL ARGUMENTS"
-        echo -e "$_sfpdesc" | column -s ";" -t -W 2
+        echo -e "$_sfpdesc" | column -s ";" -t
     fi
     if [ "$_sfodesc" != "" ]; then
         echo -e "\nOPTIONS"
-        echo -e "$_sfodesc" | column -s ";" -t -W 2
+        echo -e "$_sfodesc" | column -s ";" -t
     fi
     if [ "$_sfexamples" != "" ]; then
         echo -e "\nEXAMPLES"
-        echo -e "$_sfexamples" | column -s ";" -t -W 2
+        echo -e "$_sfexamples" | column -s ";" -t
     fi
     if [ -n "${sfextra}" ]; then
         echo -e "\n$sfextra"
