@@ -173,6 +173,9 @@ IFS=$OLDIFS
 # Check if at least one positional argument is set if 'sfparr' is used
 [ "$sfparr" == true ] && [ "${#_sfpargs[@]}" == 0 ] && _sferr "At least one positional argument must be used with ${sftbf}sfparr${sftrs}"
 
+# Correct positional argument description if 'sfparr is used'
+[ "$sfparr" == true ] && _sfpusage="${_sfpusage% *} [${_sfpusage##* } ...]"
+
 # Correct offsets
 _sfpoffset=$(( "_sfpoffset" + 3 ))
 _sfooffset=$(( "_sfooffset" + 3 ))
@@ -224,7 +227,6 @@ done
 function _sfusage {
     echo -n "Usage: $(basename "$0") [OPTIONS]"
     echo -ne "$_sfpusage"
-    [ "$sfparr" == true ] && echo -n " ..."
     echo
     [ -n "${sfdesc}" ] && echo -e "\n$sfdesc" | fold -s -w "$_sfwidth"
     if [ "$_sfpdesc" != "" ]; then
@@ -301,6 +303,9 @@ done
 
 # Parse additional arguments if 'sfparr' is set
 [ "$sfparr" == true ] && [ "${#_sfparr[@]}" -gt 0 ] && read -r -a "${_sfplast?}" <<< "${_sfparr[@]}"
+
+# Remove last missing argument to allow empty arrays if 'sfparr' is set
+[ "$sfparr" == true ] && [ "${#_sfpargs[@]}" -gt 0 ] && unset '_sfpargs[${#_sfpargs[@]}-1]'
 
 # Check if positional arguments left
 if [ "${#_sfpargs[@]}" -gt 0 ]; then
