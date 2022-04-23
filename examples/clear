@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# ----------------------
+# sf -- script framework
+# ----------------------
+
+# Declare sf variables
+sfdesc="Show the usage of color variables and \$sftclr."
+
+# Include sf, this could be replaced with a long oneliner
+source "$(dirname $0)/../sf"
+
+# ----------------------
+# Actual script
+# ----------------------
+
+echo -n "${sftbf}"                                                # Output everything from here bold
+echo "${sftr}These"                                               # Red
+sleep 0.5
+echo "${sftm}lines"                                               # Magenta
+sleep 0.5
+echo "${sftb}will"                                                # Blue
+sleep 0.5
+echo "${sftc}delete"                                              # Cyan
+sleep 0.5
+echo "${sftg}themselves"                                          # Green
+sleep 1
+echo "${sfty}now!"                                                # Yellow
+sleep 0.5
+echo -n "${sftclr}${sftclr}${sftclr}${sftclr}${sftclr}${sftclr}"  # Clear six lines
+echo "${sftblk}${sftr}T${sftm}a${sftb}d${sftc}a${sftg}a${sfty}!"  # Blinking colorful
+echo -n "${sftrs}"                                                # Reset text formatting
