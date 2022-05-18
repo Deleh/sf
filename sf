@@ -22,21 +22,23 @@ sftw=$'\e[97m'
 
 # Public output functions
 function sferr {
-    echo "${sftbf}${sftr}ERROR${sftrs} $1"
+    echo -e "${sftbf}${sftr}ERROR${sftrs} $1"
     [ -z "$2" ] && exit 1
 }
 
 function sfwarn {
-    echo "${sftbf}${sfty}WARNING${sftrs} $1"
+    echo -e "${sftbf}${sfty}WARNING${sftrs} $1"
 }
 
 # Public input functions
 function sfask {
     if [ -n "$2" ]; then
-        read -r -p "$1? [${sftbf}y${sftrs}/${sftbf}N${sftrs}] " sfin
+        echo -ne "$1? [${sftbf}y${sftrs}/${sftbf}N${sftrs}] "
+        read -r sfin
         [[ "$sfin" =~ n|N|^$ ]] && sfin=false || sfin=true
     else
-        read -r -p "$1? [${sftbf}Y${sftrs}/${sftbf}n${sftrs}] " sfin
+        echo -ne "$1? [${sftbf}Y${sftrs}/${sftbf}n${sftrs}] "
+        read -r sfin
         [[ "$sfin" =~ y|Y|^$ ]] && sfin=true || sfin=false
     fi
 }
