@@ -286,7 +286,7 @@ while (( "$#" )); do
     else
         # Check if arg starts with -
         if [ "${1:0:1}" == "-" ]; then
-            sferr "Unsupported argument/flag: ${sftbf}${1}${sftrs}"
+            sferr "Unsupported argument/flag ${sftbf}${1}${sftrs}"
         else
             # Set positional argument
             if [ "${#_sfpargs[@]}" != 0 ]; then
