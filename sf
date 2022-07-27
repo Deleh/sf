@@ -78,7 +78,7 @@ for a in "${sfargs[@]}"; do
 
     # Get amount of semicolons
     _sfsubst=${a//";"}
-    _sfcount="$(((${#a} - ${#_sfsubst})))"
+    _sfcount="$(( ${#a} - ${#_sfsubst} ))"
 
     # Positional arguments
     if [ "$_sfcount" -eq 1 ]; then
@@ -152,7 +152,7 @@ for e in "${sfexamples[@]}"; do
 
     # Get amount of ;
     _sfsubst=${e//";"}
-    _sfcount="$(((${#e} - ${#_sfsubst})))"
+    _sfcount="$(( ${#e} - ${#_sfsubst} ))"
 
     if [ "$_sfcount" -eq 1 ]; then
 
