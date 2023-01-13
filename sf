@@ -175,7 +175,7 @@ IFS=$OLDIFS
 # Check if at least one positional argument is set if 'sfparr' is used
 [ "$sfparr" == true ] && [ "${#_sfpargs[@]}" == 0 ] && _sferr "At least one positional argument must be used with ${sftbf}sfparr${sftrs}"
 
-# Correct positional argument description if 'sfparr is used'
+# Correct positional argument description if 'sfparr' is used
 [ "$sfparr" == true ] && _sfpusage="${_sfpusage% *} [${_sfpusage##* } ...]"
 
 # Correct offsets
