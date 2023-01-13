@@ -243,9 +243,7 @@ function _sfusage {
         echo -e "\nEXAMPLES"
         echo -e "$_sfexamples" | column -s ";" -t
     fi
-    if [ -n "${sfextra}" ]; then
-        echo -e "\n$sfextra"
-    fi
+    [ -n "${sfextra}" ] && echo -e "\n$sfextra" | fold -s -w "$_sfwidth"
     exit 0
 }
 
