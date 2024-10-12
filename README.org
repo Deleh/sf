@@ -96,11 +96,11 @@
 
     3. Source /sf/ from the web for example with =curl=:
        #+begin_src sh
-         source <(curl -s https://raw.githubusercontent.com/Deleh/sf/master/sf)
+         source <(curl -s https://raw.githubusercontent.com/Deleh/sf/main/sf)
        #+end_src
        *Note* that this adds an online dependency to your script AND that sourcing from a web resource might be a potential security issue.
-       The master branch should only be used for testing purposes in this method.
-       Replace =master= in the URL with a commit hash to prevent future changes in /sf/ breaking your script.
+       The main branch should only be used for testing purposes in this method.
+       Replace =main= in the URL with a commit hash to prevent future changes in /sf/ breaking your script.
 
 *** 3. Write your script
 
