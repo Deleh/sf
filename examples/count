@@ -28,7 +28,7 @@ if [ "$N" -gt 10 ]; then                    # Use parsed positional argument
 fi
 
 counter="$N"                                # Use parsed positional argument
-echo -n "$sftbf"                            # Print everyting from here bold
+echo -n "$sftbf"                            # Print everything from here bold
 while [ "$counter" -gt 0 ]; do
     if [ "$reverse" == true ]; then         # Use parsed flag
         echo "  $counter"

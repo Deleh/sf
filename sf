@@ -86,7 +86,7 @@ for a in "${sfargs[@]}"; do
         # Read positional argument declaration
         read -r -a _sfparsearr <<< "${a}"
 
-        # Add to positional argument arry
+        # Add to positional argument array
         [[ " ${_sfpargs[*]} " =~ " ${_sfparsearr[0]} " ]] && _sferr "${sftbf}${_sfparsearr[0]}${sftrs} is already set: ${sftbf}${a}${sftrs}"
         _sfpargs+=("${_sfparsearr[0]}")
 
@@ -249,7 +249,7 @@ function _sfusage {
 
 # Check for help flag
 for a in "$@"; do
-    # Check if help flag ist set
+    # Check if help flag is set
     [ "$a" == "-h" ] || [ "$a" == "--help" ] && _sfusage
 done
 
